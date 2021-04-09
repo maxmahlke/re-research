@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-04-09 Fri 16:52 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Re: Research</title>
+<meta name="author" content="Max Mahlke" />
+<meta name="generator" content="Org Mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<style type="text/css">
+/* * Cascading stylesheet for GNU Emacs org mode * Nicolas P. Rougier - September 2020 * Released under a Creative Commons CC-BY 4.0 licence */ body {    font-family: "Roboto Mono", monospace;    font-size: 14px;    font-weight: 300;    color:  rgba(51, 51, 51, 1.00);    line-height: 1.4em;    font-weight: light;    counter-reset: section;    counter-reset: toc-section;    counter-increment: toc-section;}a, a:visited {    text-decoration: none;    color: rgba(48,63,159, 1.00);}.org-bold {    font-weight: 400;}i, i a {    color: #999999;    font-style: normal;}.org-italic, .org-org-meta-line {    color: rgba(48,63,159, 0.75);    font-style: normal;}.org-face-salient {    font-weight: 400;}/* Blinking cursor when strike-through */.custom { animation: blinker 1s linear infinite; }@keyframes blinker { 50% { opacity: 0; } }/* --- Side notes --- */div.side-note::before {    content: "Note";    color: rgba(0,0,0,.75);    font-weight: 400;}div.side-note {    color: rgba(0,0,0,.5);    float: left;    font-size: .85em;    line-height: 1.25em;    margin-left: -24em;    width: 20em;}/* --- Table of contents --- */#table-of-contents {    padding-top: 0em;    margin-top: 0em;    text-transform: uppercase;}#table-of-contents ul {    padding: 0;    font-weight: 400;    list-style: none;    counter-reset: list 0;}#table-of-contents ul ul {    padding-left:0em;    font-weight: 300;    font-size: 90%;    line-height: 1.5em;    margin-top: 0em;    margin-bottom: 1em;    padding-left: 2em;}#table-of-contents h2:before {    content: "";    counter-reset: section;}#table-of-contents ul li {    vertical-align: top;    display: inline-block;    width: 32%;}#table-of-contents ul li:before {    display: inline-block;    counter-increment: list;    content: counters(list, ".") ".";    width: 2.0em;    margin-left: -2.0em;    text-align: right;    text-transform: uppercase;    color:#2255bb;}#table-of-contents ul li ul,#table-of-contents ul li ul li {    display: static;    width: 100%;    padding-left: 0;    line-height: 1.35em;}#table-of-contents ul li ul li:before {    content: ""}#table-of-contents h2 {    font-size: 1em;    font-weight: 400;    padding-top: 5em;}#table-of-contents h2:before {    content: "ʘ";}blockquote {    color: #999999;    padding-top: 0;    margin-left: 1em;    padding-left: 1em;    border-left: 3px solid #cccccc;}ul.org-ul {    padding-left: 0}ul.org-ul li  {    list-style-type: none;    margin-bottom: .5em;}ul.org-ul li p {    display: inline-block;    margin-top: 0em;    margin-bottom: 0em;}ul.org-ul li::before {    display: inline-block;    content: "ʘ";    color: #999999;    width: 1em;    margin-left: -1em;}ol.org-ol {    padding-left: 0;    margin-left: 2em;    list-style: none;    counter-reset: li;}.org-ol li  {    counter-increment: li;    margin-bottom: .25em;}.org-ol li::before {    content: counter(li) ". ";    color: #999999;    display: inline-block;    width: 2em;    margin-left: -2em;}#content, #postamble {    margin: 0 auto;    max-width: 920px;    margin-top: 2.5%;    margin-bottom: 2.5%;}#postamble {/*    border-top: 1px solid #999999; */    padding-top: 1.5em;}#postamble p, #postamble a {    color: #999999;    line-height: 1.25em;    margin: 0;    text-align: right;}h1.title {    font-size: 1.5em;    margin-top: 4em;    margin-bottom: 0em;    font-weight: 400;    text-align: left;}span.subtitle {    display: inline-block;    margin-top: .25em;    font-size: 74.5%;    font-weight: 300;    color: #999999;}h3 { padding-top: .5em; }h1, h2, h3, h4 {    color: black;    font-size: 1em;    font-weight: 400;    /* font-variant: all-small-caps; */    text-transform: uppercase;}h2 { padding-top: 5em; }h3 { padding-top: 3em; }body {  counter-reset: section;}h2 {  counter-reset: subsection;}h2::before {    color: #cccccc;    float: left;    text-align: right;    font-weight: 300;    width: 7.5em;    margin-left: -8.0em;    counter-increment: section;    content: "Chapter " counter(section) " ";}h3::before {    color: #cccccc;    float: left;    text-align: right;    font-weight: 300;    width: 2.5em;    margin-left: -3.0em;    counter-increment: subsection;    content: counter(section) "." counter(subsection) " ";}code {    background-color: #f9f9f9;    font-family: "Roboto Mono", sans-serif;    font-weight: 400;}pre::before {    color: #cccccc;    float: left;    text-align: right;    font-weight: 300;    width: 3.0em;    margin-left: -4.25em;    font-variant: small-caps;    content: "";}pre.src-lisp::before { content: "lisp"; }pre.src-org::before { content: "org"; }pre {    color: #00008b;    background-color: #fbfbfb;    overflow: auto;    margin: 0em;    padding: 0.25em;    padding-left: 0.5em;    line-height: 1.35em;    font-family: "Roboto Mono", sans-serif;    font-weight: 300;    border-left: 2px dotted #00008b;}pre.src {    position: relative;    overflow: visible;}/* --- Code folding --- */details {    color: rgba(48,63,159, 1.00);    background: #fbfbfb;    border: 1px solid rgba(48,63,159, 1.00);    border-radius: 3px;    padding:  0.25em;    margin-bottom: 1.0em;}details pre {    border: 0;}details pre.src-lisp::before { content: ""; }summary {    outline: 0;    color: rgba(48,63,159, 1.00);}summary::after {    font-size: 0.85em;    color: rgba(48,63,159, 0.25);    display: inline-block;    float: right;    content: "Click to fold/unfold";    padding-right:  0.5em;}/* --- Table --- */table { min-width: 100%; }table, tbody, td, tr, th, colgroup, thead {    border: 0;/*    padding: 0;*/}table {    margin-top: 1em;}thead {    border-bottom: 1px dashed black;}th {    text-align: left;    font-weight: 400;    padding: 0;    margin-bottom: 0.25em;    padding-bottom: 0.25em;}td { padding: 0; }tr:nth-child(even) {background: #f9f9f9;}tr:nth-child(odd) {background: #ffffff;}tbody {/* border-bottom: 1px solid black; */}/* --- Description list --- */dd {    margin-top: 0.25em;    margin-bottom: 0.50em;}/* --- Back links in header --- */div.back a {    float: right;    font-weight: 300;    color: #cccccc;    font-variant: small-caps;    margin-top: -2.5em;}/* h2 { border-bottom: .5px solid #999999; } */
+</style>
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Re: Research
+<br />
+<span class="subtitle">A publication template with reproducible research in mind.</span>
+</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgf481bd2">Structure</a>
+<ul>
+<li><a href="#orgd59f107">Main files</a></li>
+<li><a href="#orgde4b948">aux/</a></li>
+<li><a href="#org3b706f1">data/</a></li>
+<li><a href="#org698b320">frontback/</a></li>
+<li><a href="#orgda09337">gfx/</a></li>
+<li><a href="#orgbf98cb0">scripts/</a></li>
+<li><a href="#org92dd122">sections/</a></li>
+<li><a href="#org60ac27b">tables/</a></li>
+</ul>
+</li>
+<li><a href="#org87af071"><code>python</code> side</a></li>
+<li><a href="#org96a1f84"><code>LaTeX</code> side</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgf481bd2" class="outline-2">
+<h2 id="orgf481bd2">Structure</h2>
+<div class="outline-text-2" id="text-orgf481bd2">
+</div>
+<div id="outline-container-orgd59f107" class="outline-3">
+<h3 id="orgd59f107">Main files</h3>
+</div>
+<div id="outline-container-orgde4b948" class="outline-3">
+<h3 id="orgde4b948">aux/</h3>
+</div>
+<div id="outline-container-org3b706f1" class="outline-3">
+<h3 id="org3b706f1">data/</h3>
+</div>
+<div id="outline-container-org698b320" class="outline-3">
+<h3 id="org698b320">frontback/</h3>
+</div>
+<div id="outline-container-orgda09337" class="outline-3">
+<h3 id="orgda09337">gfx/</h3>
+</div>
+<div id="outline-container-orgbf98cb0" class="outline-3">
+<h3 id="orgbf98cb0">scripts/</h3>
+</div>
+<div id="outline-container-org92dd122" class="outline-3">
+<h3 id="org92dd122">sections/</h3>
+</div>
+<div id="outline-container-org60ac27b" class="outline-3">
+<h3 id="org60ac27b">tables/</h3>
+</div>
+</div>
+
+<div id="outline-container-org87af071" class="outline-2">
+<h2 id="org87af071"><code>python</code> side</h2>
+</div>
+
+<div id="outline-container-org96a1f84" class="outline-2">
+<h2 id="org96a1f84"><code>LaTeX</code> side</h2>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Max Mahlke</p>
+<p class="date">Created: 2021-04-09 Fri 16:52</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
