@@ -3,20 +3,39 @@
 #+SETUPFILE: ~/.config/emacs/modules/org.theme
 #+OPTIONS: toc:2 ^:nil
 
-* Goals
+* Motivation
 
-** Reproducible Research
+This template aims to facilitate the writing and sharing of
+publications which are based on any kind of analysis data. I found
+that often I would have to go and update numbers or figures in a
+drafted manuscript as the analysis data changed. It often happened
+that I wondered if I had already updated a number I stated or I could
+no longer figure out where a specific value came from.
 
-** Easy Writing
+The solution is simple: the analysis code should not only create the
+figures and results, but also write them to ~LaTeX~ variables / files
+which I could input into the manuscript. This way, the numbers are
+always up-to-date, and if I or anyone else has a doubt about a
+specific number, I can look at the code which generated it (rather
+than trying to retrace my own analysis months later).
 
-** Easy sharing
+This greatly simplifies writing and maintaining the manuscript, and
+contributes towards reproducible research, provided that the scripts
+(and, if possible, the data) are shared together with the
+manuscript. This is possible for example on [[https://arxiv.org][arXiv]], where you can
+upload a source archive.
 
-Shell scripts to compile the ~tar.gz~ source archives for the publisher of choice and for [[https://arxiv.org][arXiv]].
-This includes the scripts to create the figures, tables, and numbers.
+In this template, there are a collection of scripts to bridge the gap
+between ~python~ and ~LaTeX~. I further added small shell scripts for
+compiling and cleaning the ~TeX~ directory, as well as creating source
+~tar.gz~ archives which can later be sent to the publisher or uploaded
+to [[https://arxiv.org][arXiv]]. These source archives automatically include only files
+relevant to the manuscript compilation.
 
-** Uniform Look
-
-But wait, there's more! 
+Finally, I have added functions to create ~pgf~ figures with ~matplotlib~. 
+These figures are created at compile time by ~LaTeX~ as vector graphics, giving
+infinite resolution and using the same font as the rest of the manuscript.
+The figures further are aware of the manuscript ~\textwdith~.
 
 * Template Structure
 
@@ -993,6 +1012,59 @@ Again, this file only contains the actual text of the acknowledgements, the form
 #+begin_src tex :tangle frontback/ack.tex
 Many ideas I had have been improved and implemented in StackOverflow discussion.
 #+end_src
+
+** aux/
+#+TOC: headlines 3 local
+
+*** macros.tex
+
+#+begin_src tex
+\newcommand{\abbr}[2]{\textit{#1} (#2)}  % Abbreviations
+
+\newcommand{\wording}[1]{\textcolor{red}{#1}}
+\newcommand{\source}{\textcolor{orange}{[citation needed]}}
+
+\newcommand{\ie}{i.e.\,}
+\newcommand{\eg}{e.g.\,}
+#+end_src
+
+#+begin_src tex
+\newcommand\inputpgf[2]{{
+\let\includegraphicsWithoutPath\includegraphics
+\renewcommand{\includegraphics}[2][]{\includegraphicsWithoutPath[##1]{#1/##2}}
+\input{#1/#2}
+}}
+#+end_src
+
+#+begin_src tex
+\DeclareUnicodeCharacter{2212}{-}
+#+end_src
+
+*** stats.tex
+*** preprint.sty
+*** bib.bib
+
+** data/
+#+TOC: headlines 3 local
+
+Data required to create the figures and tables. This directory is not
+included in the source ~tar.gz~ files which are meant to be submitted to arXiv or
+the publisher.
+
+Ideally, the data files stored here are reduced versions of the final
+analysis results: small disk usage while retaining the necessary
+information to reproduce the figures, tables, and numbers in the paper.
+
+** gfx/
+#+TOC: headlines 3 local
+
+Output directory for the created figures.
+
+** tables/
+#+TOC: headlines 3 local
+
+Output directory for the created tables.
+
 
 * Troubleshooting
 
