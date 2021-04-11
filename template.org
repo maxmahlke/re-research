@@ -1,23 +1,25 @@
 #+TITLE: Re: Research
 #+SUBTITLE: A publication template with reproducible research in mind.
 #+SETUPFILE: ~/.config/emacs/modules/org.theme
-#+OPTIONS: toc:2 ^:nil
+#+OPTIONS: toc:1 ^:nil
 
 * Motivation
 
-This template aims to facilitate the writing and sharing of
-publications which are based on any kind of analysis data. I found
-that often I would have to go and update numbers or figures in a
-drafted manuscript as the analysis data changed. It often happened
-that I wondered if I had already updated a number I stated or I could
-no longer figure out where a specific value came from.
+This template aims to simplify the writing and sharing of
+publications, in particular of those which contain many figures, tables,
+or statistics derived from analysis data. I noticed that it commonly
+occured when I wrote a manuscript and placed the analysis numbers in
+the text, the input data or the results slightly changed and required
+to update the manuscript. This quickly lead to confusion: I was unsure whether
+all numbers and figures were up-to-date, or even worse, where a
+particular number came from exactly.
 
 The solution is simple: the analysis code should not only create the
-figures and results, but also write them to ~LaTeX~ variables / files
-which I could input into the manuscript. This way, the numbers are
-always up-to-date, and if I or anyone else has a doubt about a
-specific number, I can look at the code which generated it (rather
-than trying to retrace my own analysis months later).
+figures and compute the results, but also write them to ~LaTeX~
+variables / files which I could input into the manuscript. This way,
+the numbers are always up-to-date, and if I or anyone else has a doubt
+about a specific number, I can look at the code which generated it
+(rather than trying to retrace my own analysis months later).
 
 This greatly simplifies writing and maintaining the manuscript, and
 contributes towards reproducible research, provided that the scripts
@@ -29,7 +31,7 @@ In this template, there are a collection of scripts to bridge the gap
 between ~python~ and ~LaTeX~. I further added small shell scripts for
 compiling and cleaning the ~TeX~ directory, as well as creating source
 ~tar.gz~ archives which can later be sent to the publisher or uploaded
-to [[https://arxiv.org][arXiv]]. These source archives automatically include only files
+to [[https://arxiv.org][arXiv]]. These source archives automatically include only the files
 relevant to the manuscript compilation.
 
 Finally, I have added functions to create ~pgf~ figures with ~matplotlib~. 
@@ -38,18 +40,63 @@ infinite resolution and using the same font as the rest of the manuscript.
 The figures further are aware of the manuscript ~\textwdith~.
 
 * Template Structure
+#+TOC: headlines 1 local
 
-** scripts/
+** data/
 #+TOC: headlines 3 local
 
-The ~python~ part of the template. The scripts create and compute the figures, tables, and numbers presented in the article using the analysis results in the [[data/]] directory and store them in the [[gfx/]], [[tables/]], and [[stats.tex][aux/stats.tex]] directories / file.
+Data required to create the figures and tables. This directory is not
+included in the source ~tar.gz~ files which are meant to be submitted to arXiv or
+the publisher.
 
-The [[figure_setup.py]] file handles the ~matplotlib~ default settings which
+Ideally, the data files stored here are reduced versions of the final
+analysis results: small disk usage while retaining the necessary
+information to reproduce the figures, tables, and numbers in the paper.
+
+As an example, I'm adding a small ~csv~ file of the ~matplotlib~ release dates.
+
+#+begin_src csv :tangle data/release_dates.csv
+version,date
+v2.2.4,2019-02-26
+v3.0.3,2019-02-26
+v3.0.2,2018-11-10
+v3.0.1,2018-11-10
+v3.0.0,2018-09-18
+v2.2.3,2018-08-10
+v2.2.2,2018-03-17
+v2.2.1,2018-03-16
+v2.2.0,2018-03-06
+v2.1.2,2018-01-18
+v2.1.1,2017-12-10
+v2.1.0,2017-10-07
+v2.0.2,2017-05-10
+v2.0.1,2017-05-02
+v2.0.0,2017-01-17
+v1.5.3,2016-09-09
+v1.5.2,2016-07-03
+v1.5.1,2016-01-10
+v1.5.0,2015-10-29
+v1.4.3,2015-02-16
+v1.4.2,2014-10-26
+v1.4.1,2014-10-18
+v1.4.0,2014-08-26
+#+end_src
+
+** scripts/
+
+The ~python~ part of the template is in this directory. The scripts
+create and compute the figures, tables, and numbers presented in the
+article using the analysis results in the [[data/]] directory and store
+them in the [[gfx/]], [[tables/]], and [[stats.tex][aux/stats.tex]] directories / file.
+
+I will demonstrate this in a minimal working example using ~matplotlib~ release dates (see the [[data/]] directory), which I found [[https://matplotlib.org/stable/gallery/lines_bars_and_markers/timeline.html][here]].
+
+*** figure_setup.py
+
+This file handles the ~matplotlib~ default settings which
 give the figures in the paper a uniform look. It could easily be
 merged with the [[create_figures.py]] script, though I like to keep the
 setup and the figure code separate.
-
-*** figure_setup.py
 
 Figures in the paper are saved in the [[https://ctan.org/pkg/pgf?lang=en][pgf]] "format". This is the
 underlying ~TeX~ macros library of the famous [[https://texample.net/tikz/][TikZ]] package. The figures
@@ -72,7 +119,10 @@ $ grep textwidth main.log
 845:* \textwidth=522.0pt
 #+end_src
 
-It depends on the document style file *and will in general be different between the preprint and the publisher version.* Remember to adapt this value before recompiling the document and submitting to a new destination.
+It depends on the document style file *and will in general be different
+between the preprint and the publisher version.* Remember to adapt this
+value in the function below before recompiling the document and
+submitting to a new destination.
 
 We define a function which accepts a width in units of ~\textwidth~ and
 the ratio of the figure width to the figure height, and returns the
@@ -125,6 +175,7 @@ The most important parameters below are the following:
 - ~"text.usetex : True~ > Enable ~TeX~ support for figure labels, legends, ...
 - ~"pgf.preamble":~ (string of ~TeX~ ~\usepackage~ commands) ~ > ~TeX~ packages which are required for the figure creation. Most importantly, fonts.
 - ~"figure.figsize" : figsize(width=0.5)~ > Calling our custom figure size function. Now figures are by default one column wide.
+- ~"font.family" : "serif"~ > ~matplotlib~ by default sets the figure font to sans-serif. If your manuscript uses a serif-font, this is the setting to set. Otherwise, comment this line.
 
 #+begin_src python :tangle scripts/figure_setup.py
 SETUP = {
@@ -156,21 +207,12 @@ SETUP = {
                     ,
 
     # ----------
-    # LINES
-    "lines.linewidth"      : 1.0,           # line width in points
-    "lines.antialiased"    : True,          # render lines in antialised
-
-    # ----------
-    # PATCHES
-    "patch.linewidth"      : 0.5,           # edge width in points
-    "patch.facecolor"      : "348ABD",      # blue
-    "patch.edgecolor"      : "eeeeee",
-    "patch.antialiased"    : True,          # render patches in antialised
-
+    # GENERAL
     # ----------
     "figure.figsize"       : figsize(width=0.5),
     "savefig.dpi"          : 400,
     "font.size"            : 10, 
+    "font.family"          : "serif",
     "text.color"           : "#000000",
     "axes.facecolor"       : "#ffffff",      # axes background color
     "axes.edgecolor"       : "#000000",       # axes edge color
@@ -215,6 +257,9 @@ SETUP = {
     "legend.fontsize"      : "small",
     "legend.fancybox"      : False,  # if True, use a rounded box for the
                                      # legend, else a rectangle
+    "lines.linewidth"      : 1.0,           # line width in points
+    "lines.antialiased"    : True,          # render lines in antialised
+
 }
 #+end_src
 
@@ -226,13 +271,7 @@ matplotlib.rcParams.update(SETUP)
 
 *** create_figures.py
 
-This script creates the figures included in the paper.
-
-There are several tricks to follow which make it easy to trace the figure creation and later understand where they come from:
-
-- Give figures a name (à la ~histogram_bsolute_magnitude~) and keep the name constant in the ~python~ script, the ~LaTeX~ manuscript, and the filename
-- Define one function which creates one figure for each figure
-- Build the script around command line arguments
+This script creates the figures included in the paper. I write one function for each figure, and give the same name to the function, the figure filename, and the figure label in the ~LaTeX~ manuscript.
 
 To avoid having to edit the script every time we want to (re)compile a figure or change the output format, we add a rudimentary command line argument support.
   
@@ -240,20 +279,26 @@ We start again with imports, note that we import the [[figure_setup.py]] script 
 
 #+begin_src python :tangle scripts/create_figures.py
 from datetime import datetime
+import os
 import sys
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 import figure_setup as fs
+
+PATH_GFX = os.path.join(os.path.dirname(__file__), '../gfx/')
 #+end_src
 
-Now we define functions, one for each figure. The function has the same name as the figure file and label in the manuscript.
+Now we define functions, one for each figure. The code of the figures
+is not relevant to this explanation.
 
 Note that the figure created with the ~plt.subplots()~ command has a
-default size of one column width. The file format (e.g. ~pgf~, ~pdf~) is added as an argument
-of the function to allow easy CLI access.
+default size of one column width thanks to the defaults set above. The
+file format (e.g. ~pgf~, ~pdf~) is added as an argument of the function to
+allow easy command-line access, implemented below.
 
 #+begin_src python :tangle scripts/create_figures.py
 def hlines_demo(FORMAT):
@@ -285,10 +330,15 @@ def hlines_demo(FORMAT):
     ax.set(xlabel=("Time / s"), ylabel=("Triangles"))
 
     plt.tight_layout()
-    fig.savefig(f"../gfx/hlines_demo.{FORMAT}")
+    fig.savefig(os.path.join(PATH_GFX, f"hlines_demo.{FORMAT}"))
 #+end_src
 
-Two more figure functions, one square and one double-column one.
+Now I define two more functions: One which is square, to demonstrate
+the aspect ratio in the manuscript, and one which is two columns
+wide. The latter is based on the ~matplotlib~ release dates data in the
+[[data/]] directory. From this could, it should be apparent that any
+changes to the ~csv~ file in the [[data/]] directory would immediatly
+translate into the figure (which then translates into the manuscript).
 
 #+begin_src python :tangle scripts/create_figures.py
 def solution_space(FORMAT):
@@ -329,7 +379,7 @@ def solution_space(FORMAT):
     ax.set(xlim=(0, 4), ylim=(0, 4), xlabel='x / AU', ylabel='y / AU')
 
     plt.tight_layout()
-    fig.savefig(f"../gfx/solution_space.{FORMAT}")
+    fig.savefig(os.path.join(PATH_GFX, f"solution_space.{FORMAT}"))
 
 
 def matplotlib_release_dates(FORMAT):
@@ -345,17 +395,10 @@ def matplotlib_release_dates(FORMAT):
     """
     fig, ax = plt.subplots(figsize=fs.figsize(width=1, aspect=2))
 
-    names = ["v2.2.4", "v3.0.3", "v3.0.2", "v3.0.1", "v3.0.0", "v2.2.3",
-             "v2.2.2", "v2.2.1", "v2.2.0", "v2.1.2", "v2.1.1", "v2.1.0",
-             "v2.0.2", "v2.0.1", "v2.0.0", "v1.5.3", "v1.5.2", "v1.5.1",
-             "v1.5.0", "v1.4.3", "v1.4.2", "v1.4.1", "v1.4.0"]
-
-    dates = ["2019-02-26", "2019-02-26", "2018-11-10", "2018-11-10",
-             "2018-09-18", "2018-08-10", "2018-03-17", "2018-03-16",
-             "2018-03-06", "2018-01-18", "2017-12-10", "2017-10-07",
-             "2017-05-10", "2017-05-02", "2017-01-17", "2016-09-09",
-             "2016-07-03", "2016-01-10", "2015-10-29", "2015-02-16",
-             "2014-10-26", "2014-10-18", "2014-08-26"]
+    # Read in the data
+    data = pd.read_csv(os.path.join(PATH_GFX, "../data/release_dates.csv"))
+    names = data.version
+    dates = data.date
 
     # Convert date strings (e.g. 2014-10-18) to datetime
     dates = [datetime.strptime(d, "%Y-%m-%d") for d in dates]
@@ -382,14 +425,12 @@ def matplotlib_release_dates(FORMAT):
     ax.yaxis.set_visible(False)
 
     plt.tight_layout()
-    fig.savefig(f"../gfx/matplotlib_release_dates.{FORMAT}")
+    fig.savefig(os.path.join(PATH_GFX, f"matplotlib_release_dates.{FORMAT}"))
 #+end_src
 
-
-
 Now we add the command line logic. The idea is to have the figure name
-as mandatory argument, the format is optional. This could be extended
-to accept multiple figures and formats at once.
+as mandatory argument, the format is optional. If the script is called
+with the ~--all~ flag, all figures are compiled.
 
 #+begin_src bash
 python create_figures.py example_figure
@@ -416,9 +457,7 @@ if __name__ == "__main__":
 
 Command-line arguments are accessible via the ~sys.argv~ list. We also
 add help messages in case the script is called with an insufficient
-amount of arguments. If the script is called with the ~--all~ flag, all
-figures are recompiled.
-
+amount of arguments. 
 #+begin_src python :tangle scripts/create_figures.py
     if len(sys.argv) < 2:
         print("Provide a figure name to compile it. Choose from:")
@@ -444,7 +483,13 @@ figures are recompiled.
 
 *** compute_stats.py
 
-Statistics refers to numbers which may be included in the text but are derived from the data. An example would be a sample size, which may change throughout the analysis and the editing of the manuscript. It is easy to lose oversight of all variables and be certain that the ones in the manuscript are correct and up to date. Another common scenario is coming back to the article months / years later to see where a number comes from. If it was computed and placed in the manuscript by code, this is trivial. If it was hard-written into the manuscript, it is not obvious.
+Statistics refers to numbers which may be included in the text but are
+derived from the data. An example would be a sample size, which may
+change throughout the analysis and the editing of the manuscript. Here, I use the number
+of ~matplotlib~ versions and the earliest and latest releases as examples. It should be
+apparant from the code that if the [[data/]] changed (e.g. a new version
+comes out while writing the article), so would the variables defined
+here and printed in the manuscript.
 
 #+begin_src python :tangle compute_stats.py
 import os
@@ -453,70 +498,88 @@ import sys
 import pandas as pd
 #+end_src
 
-I am not aware of any package which makes it easy to write ~python~ variables to ~LaTeX~ code, so I write my own helper function.
+I am not aware of any package which makes it easy to write ~python~
+variables to ~LaTeX~ code, so I write my own helper function. The exact
+value of the ~LaTeX~ variable depends on the ~python~ variable filetype:
+integers have commas as thousands-separators, floats have two digits
+after the dot, etc. This solution will likely not scale well (what if
+I want my integer with a decimal place for some reason?) so it works
+for the minimum working example here.
+
+The ~\xspace~ command ensures that ~LaTeX~ adds a space after inserting
+the variable value into the text.
 
 #+begin_src python :tangle compute_stats.py
-def write_variable_to_latex(name, value):
-     """Write the variable to the stats.tex file.
+def write_variables_to_file(name, value):
+     """Write the variables to the aux/stats.tex file.
 
      Parameters
      ==========
-     name : str
-         The LaTeX variable name to be defined. Cannot contain underscores.
-     value : str, int, float
-         The variable value to assign.
+     stats : dict
+         Dictionary containing variable names as keys and their value and filetype as values.
+         The LaTeX variable name cannot contain underscores.
     """
-def write_stats_to_file(stats):
-    """Writes the tables/stats.tex file."""
-    path_stats = os.path.join(os.path.dirname(__file__),
-                              '../aux/stats.tex')
+    PATH_STATS = os.path.join(os.path.dirname(__file__), '../aux/stats.tex')
 
-    with open(path_stats, 'w') as f:
+    with open(PATH_STATS, 'w') as file_:
 
-        for var, value in stats.items():
+        for name, value in stats.items():
+
+            if "_" in name:
+                print(f"'_' is not a valid character in TeX variable names. "
+                    f"Removing them from {name}.")
+
+            name = name.replace("_", "")
 
             value, type_ = value
 
             if type_ is int:
-                f.write(f'\\def\\{var}{{{value:,}\\xspace}}\n')
+                f.write(f'\\def\\{name}{{{value:,}\\xspace}}\n')
             elif type_ is float:
-                f.write(f'\\def\\{var}{{{value:.2f}\\xspace}}\n')
+                f.write(f'\\def\\{name}{{{value:.2f}\\xspace}}\n')
+            elif type_ is str:
+                f.write(f'\\def\\{name}{{{value}\\xspace}}\n')
 
-    if "_" in name:
-        print(f"'_' is not a valid character in TeX variable names. "
-              f"Removing them from {name}.")
-        name = name.replace("_", "")
 #+end_src
 
-~\xspace~ and ~type~ detection.
-    
-#+begin_src python :tangle scripts/compute_stats.py
-    with open("aux/stats.tex", 'a') as file_:
-        file_.write(f"\\def\\{name}{{{value}\\xspace}}\n")
-#+end_src
-
-Now we define variables and write them to the file. I like to make sections.
-Refresh the stats list by passing ~--refresh~ from the command line.
+Now we define variables and write them to the file. Here, I add the number of ~matplotlib~ versions and the versions and dates of the earliest and latest releases.
 
 #+begin_src python :tangle scripts/compute_stats.py
 if __name__ == "__main__":
 
-    if "--refresh" in sys.argv:
-        os.system("rm aux/stats.tex")
+    # Directories and data
+    PATH_DATA = os.path.join(os.path.dirname(__file__), "../data/")
+    data = pd.read_csv("data/release_dates.csv")
 
-    sample = pd.read_csv("data/sample.csv")
-    write_variable_to_latex("NSample", len(sample)
+    # Dictionary storing the variable : (value, type) pairs
+    STATS = {}
 
-    stats['VISNIRTRANSITION'] = (SPECTRA_SETUP.VIS_NIR_TRANSITION, float)
-    stats['EXTRAPOLLIMITVIS'] = (SPECTRA_SETUP.EXTRAPOL_LIMIT_VIS, float)
-    stats['EXTRAPOLLIMITNIR'] = (SPECTRA_SETUP.EXTRAPOL_LIMIT_NIR, float)
-    stats['Nwavesamples'] = (len(SPECTRA_SETUP.WAVE_GRID), int)
+    # Add the number of matplotlib versions
+    STATS["NVersions"] = (len(data), int)
+
+    # Get the earliest and latest version
+    STATS["VersionEarliest"] = (data.version.min(), str) 
+    STATS["VersionLatest"] = (data.version.max(), str) 
+    STATS["VersionEarliestDate"] = data.loc[
+         data.version == data.version.min(), "date"
+         ].values[0]
+    STATS["VersionLatestDate"] = data.loc[
+         data.version == data.version.min(), "date"
+         ].values[0]
+
+    # And write to file
+    write_variables_to_file(STATS)
+    
 #+end_src
 
+As you can see, we are putting the code which computes the variable
+value right next to the variable which we then place into the
+manuscript. Later, this makes it easy for anyone to tell how a value was derived
+in the analysis.
 
 *** create_tables.py
 
-This i the same prinicple as for [[compute_stats.py]].
+This follows the same prinicple as [[compute_stats.py]].
 
 #+begin_src python :tangle scripts/create_tables.py
 def table_header(columns):
@@ -891,11 +954,14 @@ layout. This is a \textsc{pgf} figure, meaning that it is written in
 infinite resolution thanks to vector graphics and that the font in the
 figure matches the one used in the rest of the document. The figure
 spans exactly one column.
+
+
+\textsc{matplotlib} has had \NVersions version, the earliest (version \VersionEarliest) in
+\VersionEarliestDate, the latest (version \VersionLatest) in \VersionLatestDate.
 #+end_src
 
 #+begin_src tex :tangle sections/section3.tex
 \begin{figure}[t]
-  \renewcommand\sffamily{}
   \input{gfx/hlines_demo.pgf}
   \caption{Absolute magnitude in default figure layout.}
   \label{fig:hlines_demo}
@@ -1043,17 +1109,6 @@ Many ideas I had have been improved and implemented in StackOverflow discussion.
 *** stats.tex
 *** preprint.sty
 *** bib.bib
-
-** data/
-#+TOC: headlines 3 local
-
-Data required to create the figures and tables. This directory is not
-included in the source ~tar.gz~ files which are meant to be submitted to arXiv or
-the publisher.
-
-Ideally, the data files stored here are reduced versions of the final
-analysis results: small disk usage while retaining the necessary
-information to reproduce the figures, tables, and numbers in the paper.
 
 ** gfx/
 #+TOC: headlines 3 local
