@@ -1,0 +1,999 @@
+#+TITLE: Re: Research
+#+SUBTITLE: A publication template with reproducible research in mind.
+#+SETUPFILE: ~/.config/emacs/modules/org.theme
+#+OPTIONS: toc:2 ^:nil
+
+* Goals
+
+** Reproducible Research
+
+** Easy Writing
+
+** Easy sharing
+
+Shell scripts to compile the ~tar.gz~ source archives for the publisher of choice and for [[https://arxiv.org][arXiv]].
+This includes the scripts to create the figures, tables, and numbers.
+
+** Uniform Look
+
+But wait, there's more! 
+
+* Template Structure
+
+** scripts/
+#+TOC: headlines 3 local
+
+The ~python~ part of the template. The scripts create and compute the figures, tables, and numbers presented in the article using the analysis results in the [[data/]] directory and store them in the [[gfx/]], [[tables/]], and [[stats.tex][aux/stats.tex]] directories / file.
+
+The [[figure_setup.py]] file handles the ~matplotlib~ default settings which
+give the figures in the paper a uniform look. It could easily be
+merged with the [[create_figures.py]] script, though I like to keep the
+setup and the figure code separate.
+
+*** figure_setup.py
+
+Figures in the paper are saved in the [[https://ctan.org/pkg/pgf?lang=en][pgf]] "format". This is the
+underlying ~TeX~ macros library of the famous [[https://texample.net/tikz/][TikZ]] package. The figures
+are written as ~TeX~ commands to file by ~matplotlib~. The advantages are
+outlined above, here I give the "drawback": very few lines of setup
+are necessary first.
+
+We start with some imports.
+
+#+begin_src python :tangle scripts/figure_setup.py
+import matplotlib
+import numpy as np
+#+end_src
+
+Because our ~pgf~ graphics are drawn into the ~pdf~ document, we want to make sure that the
+figure width matches the ~\textwidth~ in the document. ~matplotlib~ figure sizes are by default in inches. The ~textwidth~ is given in the ~TeX~ logfile:
+
+#+begin_src bash
+$ grep textwidth main.log
+845:* \textwidth=522.0pt
+#+end_src
+
+It depends on the document style file *and will in general be different between the preprint and the publisher version.* Remember to adapt this value before recompiling the document and submitting to a new destination.
+
+We define a function which accepts a width in units of ~\textwidth~ and
+the ratio of the figure width to the figure height, and returns the
+corresponding figure size in inches. Note that axes labels, figure
+titles, and other annotations outside the plotting area still count to
+the figure area in ~matplotlib~ terms. Plotting a figure with equal
+aspect ratio does hence not necessarily yield square axes. You can
+find more information in [[https://stackoverflow.com/questions/36040605/matplotlibs-figure-and-axes-explanation][this StackOverflow post]].
+Furthermore, don't forget to apply ~plt.tight_layout()~ before saving
+the figure to remove padding around the figure.
+
+The default aspect ratio (width:height) is the golden ratio.
+
+#+begin_src python :tangle scripts/figure_setup.py
+GOLDEN_RATIO = (np.sqrt(5) + 1) / 2 
+
+def figsize(width=0.5, aspect=GOLDEN_RATIO):
+    """Compute the figure width and height in inches.
+
+    Parameters
+    ==========
+    width : float
+        The figure width in units of the \textwidth. Default is 0.5,
+        corresponding to one columnwidth.
+    aspect : float
+        The aspect ratio (width / height) of the figure. Default is the golden ratio.
+
+    Returns
+    =======
+    tuple
+        The figure width and height in inches.
+    """
+    TEXTWIDTH = 522  # in points, from the LaTeX document log file
+    POINTS_TO_INCHES = 1 / 72.27
+
+    figure_width = TEXTWIDTH * POINTS_TO_INCHES * width
+    figure_height = figure_width / aspect
+
+    return figure_width, figure_height
+#+end_src
+
+Now, we edit the ~matplotlib~ figure defaults to our liking by updating
+the ~rcParams~ dictionary. You can find a list of the editable
+configuration parameters [[https://matplotlib.org/stable/tutorials/introductory/customizing.html][here]]. 
+
+The most important parameters below are the following:
+
+- ~"backend" : "pgf"~ > Required to export figures to the ~pgf~ format
+- ~"backend_fallback" : True~ > Sometimes, we still want to save as ~png~ or ~pdf~
+- ~"text.usetex : True~ > Enable ~TeX~ support for figure labels, legends, ...
+- ~"pgf.preamble":~ (string of ~TeX~ ~\usepackage~ commands) ~ > ~TeX~ packages which are required for the figure creation. Most importantly, fonts.
+- ~"figure.figsize" : figsize(width=0.5)~ > Calling our custom figure size function. Now figures are by default one column wide.
+
+#+begin_src python :tangle scripts/figure_setup.py
+SETUP = {
+    # ----------
+    # GENERAL SET-UP
+    "backend"              : "pgf",         # To export figures to .pgf
+    "backend_fallback"     : True,          # If not compatible,
+                                            #  mpl will find a compatible one
+    "toolbar"              : "toolbar2",    # "toolbar2", "toolmanager", "None"
+    "timezone"             : "UTC",         # a pytz timezone string,
+                                            # eg US/Central or Europe/Paris
+
+    # ----------
+    # LaTeX SET-UP
+    "text.usetex"          : True,          # use inline math for ticks
+    "pgf.rcfonts"          : False,         # setup fonts from rc parameters
+
+    # Packages required for figure compilation:
+    "pgf.preamble":        
+                    r"\usepackage{amsmath} "
+                    r"\usepackage[utf8x]{inputenc} "
+                    r"\usepackage[T1]{fontenc} "
+                    r"\usepackage{txfonts} " # txfonts are used by A&A Journal
+                    r"\usepackage[default]{sourcesanspro} "
+                    r"\usepackage{pgfplots} "
+                    r"\usepgfplotslibrary{external} "
+                    r"\tikzexternalize "
+                    r"\usepackage{xcolor} "
+                    ,
+
+    # ----------
+    # LINES
+    "lines.linewidth"      : 1.0,           # line width in points
+    "lines.antialiased"    : True,          # render lines in antialised
+
+    # ----------
+    # PATCHES
+    "patch.linewidth"      : 0.5,           # edge width in points
+    "patch.facecolor"      : "348ABD",      # blue
+    "patch.edgecolor"      : "eeeeee",
+    "patch.antialiased"    : True,          # render patches in antialised
+
+    # ----------
+    "figure.figsize"       : figsize(width=0.5),
+    "savefig.dpi"          : 400,
+    "font.size"            : 10, 
+    "text.color"           : "#000000",
+    "axes.facecolor"       : "#ffffff",      # axes background color
+    "axes.edgecolor"       : "#000000",       # axes edge color
+    "axes.linewidth"       : 0.5,           # edge linewidth
+    "axes.grid"            : False,         # display grid or not
+    "axes.titlesize"       : "large",  # fontsize of the axes title
+    "axes.labelsize"       : "small", # fontsize of the x any y labels
+    "axes.labelcolor"      : "black",
+    "axes.axisbelow"       : True,   # whether axis gridlines and ticks are
+                                     # below the axes elements (lines, text)
+    "axes.xmargin"         : 0,
+    "axes.ymargin"         : 0,
+    "axes.spines.top"      : True,
+    "axes.spines.right"    : True,
+    "xtick.major.size"     : 4,      # major tick size in points
+    "xtick.minor.size"     : 2,      # minor tick size in points
+    "xtick.major.pad"      : 2,      # distance to major tick label in points
+    "xtick.major.width"    : 0.5,
+    "xtick.minor.width"    : 0.3,
+    "xtick.minor.visible"  : True,
+    "xtick.minor.pad"      : 2,    # distance to the minor tick label in points
+    "xtick.color"          : "black", # color of the tick labels
+    "xtick.top"            : True,
+    "xtick.labelsize"      : "8",  # fontsize of the tick labels
+    "xtick.direction"      : "in",     # direction: in or out
+    "ytick.major.size"     : 4,      # major tick size in points
+    "ytick.major.width"    : 0.5,
+    "ytick.minor.width"    : 0.2,
+    "ytick.minor.size"     : 2,      # minor tick size in points
+    "ytick.major.pad"      : 2,      # distance to major tick label in points
+    "ytick.minor.pad"      : 2,   # distance to the minor tick label in points
+    "ytick.major.width"    : 0.5,
+    "ytick.minor.width"    : 0.3,
+    "ytick.right"          : True,
+    "ytick.color"          : "black", # color of the tick labels
+    "ytick.labelsize"      : "8",  # fontsize of the tick labels
+    "ytick.direction"      : "in",     # direction: in or out
+    "ytick.minor.visible"  : True,
+    "grid.color"           : "black", # grid color
+    "grid.linestyle"       : ":",      # dotted
+    "grid.linewidth"       : "0.2",    # in points
+    "legend.fontsize"      : "small",
+    "legend.fancybox"      : False,  # if True, use a rounded box for the
+                                     # legend, else a rectangle
+}
+#+end_src
+
+And finally, we apply these new default settings.
+
+#+begin_src python :tangle scripts/figure_setup.py
+matplotlib.rcParams.update(SETUP)
+#+end_src
+
+*** create_figures.py
+
+This script creates the figures included in the paper.
+
+There are several tricks to follow which make it easy to trace the figure creation and later understand where they come from:
+
+- Give figures a name (à la ~histogram_bsolute_magnitude~) and keep the name constant in the ~python~ script, the ~LaTeX~ manuscript, and the filename
+- Define one function which creates one figure for each figure
+- Build the script around command line arguments
+
+To avoid having to edit the script every time we want to (re)compile a figure or change the output format, we add a rudimentary command line argument support.
+  
+We start again with imports, note that we import the [[figure_setup.py]] script to apply our ~matplotlib~ defaults.
+
+#+begin_src python :tangle scripts/create_figures.py
+from datetime import datetime
+import sys
+
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+import numpy as np
+
+import figure_setup as fs
+#+end_src
+
+Now we define functions, one for each figure. The function has the same name as the figure file and label in the manuscript.
+
+Note that the figure created with the ~plt.subplots()~ command has a
+default size of one column width. The file format (e.g. ~pgf~, ~pdf~) is added as an argument
+of the function to allow easy CLI access.
+
+#+begin_src python :tangle scripts/create_figures.py
+def hlines_demo(FORMAT):
+    """Plot a randomly chosen matplotlib example to illustrate the default
+    plot layout.
+
+    Example adapted from
+    https://matplotlib.org/stable/gallery/lines_bars_and_markers/vline_hline_demo.html
+
+    Parameters
+    ==========
+    FORMAT : str
+        File format to save the figure in.
+    """
+    fig, ax = plt.subplots()
+
+    # Fixing random state for reproducibility
+    np.random.seed(19680801)
+
+    t = np.arange(0.0, 5.0, 0.1)
+    s = np.exp(-t) + np.sin(2 * np.pi * t) + 1
+    nse = np.random.normal(0.0, 0.3, t.shape) * s
+
+    ax.plot(t, s + nse, "^", c='black')
+    ax.vlines(t, [0], s, color='black')
+    # By using ``transform=ax.get_xaxis_transform()`` the y coordinates are scaled
+    # such that 0 maps to the bottom of the axes and 1 to the top.
+    ax.vlines([1, 2], 0, 1, transform=ax.get_xaxis_transform(), colors='r')
+    ax.set(xlabel=("Time / s"), ylabel=("Triangles"))
+
+    plt.tight_layout()
+    fig.savefig(f"../gfx/hlines_demo.{FORMAT}")
+#+end_src
+
+Two more figure functions, one square and one double-column one.
+
+#+begin_src python :tangle scripts/create_figures.py
+def solution_space(FORMAT):
+    """Plot solution space to demonstrate a square figure. This is an
+    adapted matplotlib example, from
+
+    https://matplotlib.org/stable/gallery/images_contours_and_fields/
+    contours_in_optimization_demo.html
+
+    Parameters
+    ==========
+    FORMAT : str
+        File format to save the figure in.
+    """
+    fig, ax = plt.subplots(figsize=fs.figsize(aspect=1))
+
+    # Set up survey vectors
+    xvec = np.linspace(0.001, 4.0, 101)
+    yvec = np.linspace(0.001, 4.0, 105)
+
+    # Set up survey matrices.  Design disk loading and gear ratio.
+    x1, x2 = np.meshgrid(xvec, yvec)
+
+    # Evaluate some stuff to plot
+    obj = x1**2 + x2**2 - 2*x1 - 2*x2 + 2
+    g1 = -(3*x1 + x2 - 5.5)
+    g2 = -(x1 + 2*x2 - 4.5)
+    g3 = 0.8 + x1**-3 - x2
+
+    cntr = ax.contour(x1, x2, obj, [0.01, 0.1, 0.5, 1, 2, 4, 8, 16],
+                    colors='black')
+    ax.clabel(cntr, fmt="%2.1f", use_clabeltext=True)
+
+    cg1 = ax.contour(x1, x2, g1, [0], colors='sandybrown')
+    cg2 = ax.contour(x1, x2, g2, [0], colors='orangered')
+    cg3 = ax.contour(x1, x2, g3, [0], colors='mediumblue')
+
+    ax.set(xlim=(0, 4), ylim=(0, 4), xlabel='x / AU', ylabel='y / AU')
+
+    plt.tight_layout()
+    fig.savefig(f"../gfx/solution_space.{FORMAT}")
+
+
+def matplotlib_release_dates(FORMAT):
+    """Plot matplotlib release dates to showcase a two-column figure.
+
+    Example adapted from
+    https://matplotlib.org/stable/gallery/lines_bars_and_markers/timeline.html
+
+    Parameters
+    ==========
+    FORMAT : str
+        File format to save the figure in.
+    """
+    fig, ax = plt.subplots(figsize=fs.figsize(width=1, aspect=2))
+
+    names = ["v2.2.4", "v3.0.3", "v3.0.2", "v3.0.1", "v3.0.0", "v2.2.3",
+             "v2.2.2", "v2.2.1", "v2.2.0", "v2.1.2", "v2.1.1", "v2.1.0",
+             "v2.0.2", "v2.0.1", "v2.0.0", "v1.5.3", "v1.5.2", "v1.5.1",
+             "v1.5.0", "v1.4.3", "v1.4.2", "v1.4.1", "v1.4.0"]
+
+    dates = ["2019-02-26", "2019-02-26", "2018-11-10", "2018-11-10",
+             "2018-09-18", "2018-08-10", "2018-03-17", "2018-03-16",
+             "2018-03-06", "2018-01-18", "2017-12-10", "2017-10-07",
+             "2017-05-10", "2017-05-02", "2017-01-17", "2016-09-09",
+             "2016-07-03", "2016-01-10", "2015-10-29", "2015-02-16",
+             "2014-10-26", "2014-10-18", "2014-08-26"]
+
+    # Convert date strings (e.g. 2014-10-18) to datetime
+    dates = [datetime.strptime(d, "%Y-%m-%d") for d in dates]
+
+    # Choose some nice levels
+    levels = np.tile([-5, 5, -3, 3, -1, 1],
+                    int(np.ceil(len(dates)/6)))[:len(dates)]
+
+    ax.vlines(dates, 0, levels, color="tab:red")  # The vertical stems.
+    ax.plot(dates, np.zeros_like(dates), "-o",
+            color="k", markerfacecolor="w")  # Baseline and markers on it.
+
+    # annotate lines
+    for d, l, r in zip(dates, levels, names):
+        ax.annotate(r, xy=(d, l),
+                    xytext=(-3, np.sign(l)*3), textcoords="offset points",
+                    horizontalalignment="right",
+                    verticalalignment="bottom" if l > 0 else "top")
+
+    # format xaxis with 4 month intervals
+    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=4))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
+    plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
+    ax.yaxis.set_visible(False)
+
+    plt.tight_layout()
+    fig.savefig(f"../gfx/matplotlib_release_dates.{FORMAT}")
+#+end_src
+
+
+
+Now we add the command line logic. The idea is to have the figure name
+as mandatory argument, the format is optional. This could be extended
+to accept multiple figures and formats at once.
+
+#+begin_src bash
+python create_figures.py example_figure
+python create_figures.py example_figure --format pdf
+python create_figures.py --all
+#+end_src
+
+We keep a dictionary associating the figure name and the function
+which creates it. In principle, we could exploit that figure and
+function share their names, though using a dictionary is a simple way
+of implementing it.
+
+#+begin_src python :tangle scripts/create_figures.py
+if __name__ == "__main__":
+
+    # figure_name : figure_function
+    FIGURE_FUNCTIONS = {
+        "hlines_demo": hlines_demo,
+        "solution_space": solution_space,
+        "matplotlib_release_dates": matplotlib_release_dates,
+    }
+
+#+end_src
+
+Command-line arguments are accessible via the ~sys.argv~ list. We also
+add help messages in case the script is called with an insufficient
+amount of arguments. If the script is called with the ~--all~ flag, all
+figures are recompiled.
+
+#+begin_src python :tangle scripts/create_figures.py
+    if len(sys.argv) < 2:
+        print("Provide a figure name to compile it. Choose from:")
+        print(list(FIGURE_FUNCTIONS.keys()))
+        sys.exit()
+
+    # Get the format if it was specified on the command line
+    if "--format" in sys.argv:
+       idx = np.where(sys.argv == "--format")[0] + 1
+       FORMAT = sys.argv[idx]
+    else:
+       FORMAT = "pgf"
+
+    # Call the figure function
+    if not "--all" in sys.argv:
+        figure_name = sys.argv[1]
+        FIGURE_FUNCTIONS[figure_name](FORMAT)
+    else:
+        for figure, function in FIGURE_FUNCTIONS.items():
+            print(f"Compiling {figure}..")
+            function(FORMAT)
+#+end_src
+
+*** compute_stats.py
+
+Statistics refers to numbers which may be included in the text but are derived from the data. An example would be a sample size, which may change throughout the analysis and the editing of the manuscript. It is easy to lose oversight of all variables and be certain that the ones in the manuscript are correct and up to date. Another common scenario is coming back to the article months / years later to see where a number comes from. If it was computed and placed in the manuscript by code, this is trivial. If it was hard-written into the manuscript, it is not obvious.
+
+#+begin_src python :tangle compute_stats.py
+import os
+import sys
+
+import pandas as pd
+#+end_src
+
+I am not aware of any package which makes it easy to write ~python~ variables to ~LaTeX~ code, so I write my own helper function.
+
+#+begin_src python :tangle compute_stats.py
+def write_variable_to_latex(name, value):
+     """Write the variable to the stats.tex file.
+
+     Parameters
+     ==========
+     name : str
+         The LaTeX variable name to be defined. Cannot contain underscores.
+     value : str, int, float
+         The variable value to assign.
+    """
+def write_stats_to_file(stats):
+    """Writes the tables/stats.tex file."""
+    path_stats = os.path.join(os.path.dirname(__file__),
+                              '../aux/stats.tex')
+
+    with open(path_stats, 'w') as f:
+
+        for var, value in stats.items():
+
+            value, type_ = value
+
+            if type_ is int:
+                f.write(f'\\def\\{var}{{{value:,}\\xspace}}\n')
+            elif type_ is float:
+                f.write(f'\\def\\{var}{{{value:.2f}\\xspace}}\n')
+
+    if "_" in name:
+        print(f"'_' is not a valid character in TeX variable names. "
+              f"Removing them from {name}.")
+        name = name.replace("_", "")
+#+end_src
+
+~\xspace~ and ~type~ detection.
+    
+#+begin_src python :tangle scripts/compute_stats.py
+    with open("aux/stats.tex", 'a') as file_:
+        file_.write(f"\\def\\{name}{{{value}\\xspace}}\n")
+#+end_src
+
+Now we define variables and write them to the file. I like to make sections.
+Refresh the stats list by passing ~--refresh~ from the command line.
+
+#+begin_src python :tangle scripts/compute_stats.py
+if __name__ == "__main__":
+
+    if "--refresh" in sys.argv:
+        os.system("rm aux/stats.tex")
+
+    sample = pd.read_csv("data/sample.csv")
+    write_variable_to_latex("NSample", len(sample)
+
+    stats['VISNIRTRANSITION'] = (SPECTRA_SETUP.VIS_NIR_TRANSITION, float)
+    stats['EXTRAPOLLIMITVIS'] = (SPECTRA_SETUP.EXTRAPOL_LIMIT_VIS, float)
+    stats['EXTRAPOLLIMITNIR'] = (SPECTRA_SETUP.EXTRAPOL_LIMIT_NIR, float)
+    stats['Nwavesamples'] = (len(SPECTRA_SETUP.WAVE_GRID), int)
+#+end_src
+
+
+*** create_tables.py
+
+This i the same prinicple as for [[compute_stats.py]].
+
+#+begin_src python :tangle scripts/create_tables.py
+def table_header(columns):
+    """Returns table header string with specified columns."""
+    return \
+        f'\\begin{{tabular}}{{{"l" + "r" * (len(columns) - 1)}}}\n'\
+        f'\t\\toprule\n'\
+        f'\t{" & ".join(columns)} \\\\\n'\
+        f'\t\\midrule\n'
+
+
+def table_end():
+    """Returns table end string."""
+    return \
+        f'\t\\bottomrule\n'\
+        f'\\end{{tabular}}\n'  # noqa
+
+
+def sample_stats():
+    """Creates classy sample statistics table."""
+    path_table = os.path.join(os.path.dirname(__file__),
+                              '../tables/sample_stats.tex')
+
+    N = tools.sample_sizes()
+    IC = tools.information_content()
+
+    with open(path_table, 'w') as table:
+        table.write(table_header(['Feature', 'N', 'IC']))
+
+        for feat in ['Spectra', 'Photometry']:
+            table.write(f'\t\\textit{{{feat}}} & & \\\\')
+
+            for wave in ['VIS', 'NIR', 'VISNIR']:
+                table.write(f'{wave} & {N[feat][wave]:,} &'
+                            f'{IC[feat][wave]:.1f}\\\\')
+            else:
+                table.write(r'\rule{0pt}{1ex}\\')
+
+        for feat in ['Albedo', 'Phase']:
+            table.write(f'\t\\textit{{{feat}}} & {N[feat]:,}'
+                        f'& {IC[feat]:.2f}\\\\')
+
+            if feat == 'Albedo':
+                table.write(r'\rule{0pt}{1ex}\\')
+
+        table.write(table_end())
+#+end_src
+
+The CLI follows [[create_figures.py]].
+
+#+begin_src python :tangle scripts/create_tables.py
+if __name__ == '__main__':
+
+    table_name = sys.argv[-1]
+
+    if len(sys.argv) < 2:
+        print('Expecting label of table as argument. Exiting.')
+        sys.exit()
+
+    if table_name == 'sample_stats':
+        sample_stats()
+
+#+end_src
+
+
+** ./
+#+TOC: headlines 3 local
+
+
+*** main.tex
+
+The root ~tex~ file of the template.
+This file imports all other ~tex~ files and generates the pdf itself.
+
+First, we define the destination of the article. When drafting the
+manuscript, this will likely be a preprint server like
+[[https://arxiv.org][arXiv]]. Publisher and preprint server likely use different
+~documentclasses~ and require different ~LaTeX~ keywords to be
+defined for e.g. the author affiliation. The customization is done in
+this file.
+
+The destination is set by using the corresponding ~make~ command, see [[Makefile]].
+
+Disclaimer: My LaTeX skills are not [[https://www.thelocal.de/20190710/german-phrase-of-the-day-das-gelbe-vom-ei/][the yellow of the egg]].
+
+#+begin_src tex :tangle main.tex
+% Set destination of article: publisher,arxiv.
+%
+% Setting at compile time via eg 'pdflatex "\def\destination{arxiv} \input{main.tex}"'
+% opentakes priority over the definition below
+\ifx\destination\undefined
+  \def\destination{arxiv}  % publisher,arxiv
+\fi
+
+\def\arxiv{arxiv}
+\def\publisher{publisher}
+#+end_src
+
+The ~snapshot~ package creates a list of the dependencies of the
+document version in the ~main.dep~ file. This list is later used when
+creating the source ~tar.gz~ archives for submission.
+
+#+begin_src tex :tangle main.tex
+\RequirePackage{snapshot}
+#+end_src
+
+Pass options early to ~xcolor~ and ~hyperlink~ to avoid bugs when other
+packages import them later.
+
+#+begin_src tex :tangle main.tex
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\PassOptionsToPackage{colorlinks=True,allcolors=RoyalBlue}{hyperlink}
+#+end_src
+
+Now, we define the documentclass. This definition largely depends on
+the destination (publishers may provide their own ~LaTeX~ packages), so
+we wrap it in an ~if~-block and define the document for each
+destination.
+
+I am a planetary scientist, so I use the Icarus journal as an example here.
+Note that the [[preprint.sty][preprint]] style file is imported for the arXiv
+submission. The preprint style uses a different command for the
+affiliations as the Icarus (i.e. Elsevier) package, hence we mirror
+the commands to do exactly the same.
+
+#+begin_src tex :tangle main.tex
+\ifx\destination\arxiv
+  \documentclass{article}
+  \pdfoutput=1	% ensure pdflatex when submitting to arXiv
+  \usepackage{aux/preprint}
+  \usepackage{natbib}
+  \usepackage{authblk}
+  % Alias author commands to mirror publisher
+  \let\address\affil
+\else
+  \documentclass[preprint,3p,authoryear,lefttitle]{elsarticle}
+  % \documentclass[preprint,5p,authoryear,twocolumn,lefttitle]{elsarticle}  % referee version
+  \journal{Icarus}
+\fi
+#+end_src
+
+Now we import useful packages. ~hyperref~ and ~cleverref~ should come last.
+
+#+begin_src tex :tangle main.tex
+\usepackage{amsmath}
+\usepackage{aux/aas_macros}
+\usepackage{graphicx}
+\usepackage[title]{appendix}
+\usepackage{booktabs}
+\usepackage[skip=4pt]{caption}
+\usepackage{here}
+\usepackage[utf8]{inputenc}
+\usepackage{lipsum}
+\usepackage{pgf}
+\usepackage{tikz}
+\usepackage{url}
+\usepackage{xspace}
+\usepackage[colorlinks=True, allcolors=RoyalBlue]{hyperref}
+\usepackage[nameinlink]{cleveref}
+#+end_src
+
+Uncomment these two lines before submission to make the referee happy.
+
+#+begin_src tex :tangle main.tex
+% \usepackage{lineno}
+% \linenumbers
+#+end_src
+
+Import our [[macros.tex][macros]] and [[stats.tex][statistics]] files.
+
+#+begin_src tex :tangle main.tex
+\input{aux/macros}
+\input{aux/stats}
+#+end_src
+
+Finally, we are building the document itself. We start by adding a
+title and information about the authors. Note the ~if~-block which defines additional
+information like the email address of the leading author in case we
+are submitting to the publisher.
+
+#+begin_src tex :tangle main.tex
+\begin{document}
+
+% ------
+\title{Re: Research - A publication template}
+
+% Authors
+\author[1]{Max Mahlke}
+
+\ifx\destination\publisher
+  \corref{cor}
+  \cortext[cor]{Corresponding author}
+  \ead{max.mahlke@oca.eu}  % email address of *most recent* author
+\fi
+
+% Affiliations
+\address[1]{Universit{\'e}
+  C{\^o}te d'Azur, Observatoire de la C{\^o}te d'Azur, CNRS, Laboratoire Lagrange, France}
+#+end_src
+
+Next comes the [[abstract.tex][abstract]]. Again, we wrap it in an ~if~-block to account for different preprint and publisher styles.
+
+#+begin_src tex :tangle main.tex
+\ifx\destination\arxiv
+  \twocolumn[
+    \begin{@twocolumnfalse}
+      \maketitle
+      \begin{abstract}
+        \input{frontback/abstract}
+      \end{abstract}
+    \end{@twocolumnfalse}
+  ]
+\else
+  \begin{frontmatter}
+    \begin{abstract}
+      \input{frontback/abstract}
+    \end{abstract}
+    \begin{keyword}
+      Asteroids \sep Asteroids, Composition \sep Asteroids, Surfaces \sep Photometry
+    \end{keyword}
+  \end{frontmatter}
+\fi
+#+end_src
+
+The heart of the article: the [[sections/][sections]].
+
+#+begin_src tex :tangle main.tex
+% Introction
+\input{sections/section1}
+% Methodology
+\input{sections/section2}
+% Results
+\input{sections/section3}
+% Discussion
+\input{sections/section4}
+#+end_src
+
+Can't forget about the acknowledgements.
+
+#+begin_src tex :tangle main.tex
+\section*{Acknowledgements}%
+\label{sec:acknowledgements}%
+\input{frontback/ack}
+#+end_src
+
+Proper scientific work needs proper [[bib.bib][bibliographies]] [citation needed].
+Another ~if~-block for the preprint vs publisher formats.
+
+#+begin_src tex :tangle main.tex
+\ifx\destination\arxiv
+  \bibliographystyle{aux/arxiv}
+\else
+  \bibliographystyle{aux/publisher}
+  \biboptions{authoryear}
+\fi
+
+\bibliography{aux/bib}
+#+end_src
+
+And we end the document with a fresh page and the [[appendix.tex][appendix]].
+
+#+begin_src tex :tangle main.tex
+\clearpage
+
+% ------
+% Appendix
+\appendix
+\input{frontback/appendix}
+\end{document}
+#+end_src
+
+*** Makefile
+
+TODO Exclude data/ directory from source targz
+
+*** template.org
+
+The file you are currently reading unless you are reading the [[template.html][HTML]] file.
+
+*** template.html
+
+The file you are currently reading unless you are reading the [[template.org][org]] file.
+
+** sections/
+#+TOC: headlines 3 local
+
+Where it all comes together.
+
+The section files contain the actual content of the publication. Here, they are used to showcase the ~python~ - ~LaTeX~ interaction.
+
+*** Introduction
+
+Compiling multi-file documents requires specifying the root ~tex~ file
+in all other files. This is achieved here for [[https://www.vim.org][vim]].
+
+#+begin_src tex :tangle sections/section1.tex
+%! TEX root = ../main.tex
+#+end_src
+
+Some contents to fill the introduction.
+
+#+begin_src tex :tangle sections/section1.tex
+\section{Introduction}%
+\label{sec:introduction}%
+
+The problem
+
+This document highlights some aspects of the \textsc{Re: Research}
+template.\footnote{\url{http://github.com/maxmahlke/re-research/}}
+More information can be found in the \textsc{template.html} file in
+the reference repository. I developed this template while writing a
+publication myself \citep{2009.05129v1}.\footnote{Check out the arXiv
+version at \url{https://arxiv.org/pdf/2009.05129.pdf}}
+
+#+end_src
+
+
+At the end, we add the root ~tex~ file variable for [[https://www.gnu.org/software/emacs/][GNU Emacs]].
+
+#+begin_src tex :tangle sections/section1.tex
+%% Local Variables:
+%% tex-main-file: "../main.tex"
+%% End:
+#+end_src
+
+*** Methodology
+
+#+begin_src tex :tangle sections/section2.tex 
+%! TEX root = ../main.tex
+#+end_src
+
+#+begin_src tex :tangle sections/section2.tex 
+\section{Methodology}%
+\label{sec:methodology}%
+
+All figures, tables, and numbers in the manuscript which are subject
+to change when the analysis data changes are computed using
+\textsc{python} script and saved into auxilliary \LaTeX files. The
+\textsc{python} scripts are located in the \textsc{scripts} directory,
+with one script each dedicated to creating figures, tables, and
+numbers respectively. An additional script contains defaults for the
+\textsc{matplotlib} package to get a uniform figure appearance
+throughout the manuscript while reducing the amount of necessary code
+lines.
+
+The necessary files are created with comments via the
+\textsc{template.org} file in the GitHub repository. More information
+on the usage can be found there.
+
+\lipsum
+#+end_src
+
+
+#+begin_src tex :tangle sections/section2.tex 
+%% Local Variables:
+%% tex-main-file: "../main.tex"
+%% End:
+#+end_src
+
+*** Results
+
+#+begin_src tex :tangle sections/section3.tex
+%! TEX root = ../main.tex
+#+end_src
+
+#+begin_src tex :tangle sections/section3.tex
+\section{Results}%
+\label{sec:results}%
+\Cref{fig:scatterplot_absolute_magnitude} showcases the default figure
+layout. This is a \textsc{pgf} figure, meaning that it is written in
+\LaTeX commands and created at document compile time. Notice the
+infinite resolution thanks to vector graphics and that the font in the
+figure matches the one used in the rest of the document. The figure
+spans exactly one column.
+#+end_src
+
+#+begin_src tex :tangle sections/section3.tex
+\begin{figure}[t]
+  \renewcommand\sffamily{}
+  \input{gfx/hlines_demo.pgf}
+  \caption{Absolute magnitude in default figure layout.}
+  \label{fig:hlines_demo}
+\end{figure}
+\lipsum[3-8]
+#+end_src
+
+Now we add a two-column figure.
+
+#+begin_src tex :tangle sections/section3.tex
+In \Cref{fig:matplotlib_release_dates}, we can see the use of a double-column \textsc{pgf} figure.
+
+\begin{figure*}[t]
+  \input{gfx/matplotlib_release_dates.pgf}
+  \caption{Absolute magnitude spanning the full textwidth.}
+  \label{fig:matplotlib_release_dates}
+\end{figure*}
+
+\lipsum[1-10]
+
+\Cref{fig:solution_space} shows a square figure. See the
+documentation for implementation details.
+#+end_src
+
+Now we add a square figure.
+
+#+begin_src tex :tangle sections/section3.tex
+\begin{figure}[t]
+  \input{gfx/solution_space.pgf}
+  \caption{Absolute magnitude in a square figure.}
+  \label{fig:solution_space}
+\end{figure}
+\lipsum
+#+end_src
+
+#+begin_src tex :tangle sections/section3.tex
+%% Local Variables:
+%% tex-main-file: "../main.tex"
+%% End:
+#+end_src
+
+*** Discussion
+
+#+begin_src tex :tangle sections/section4.tex
+%! TEX root = ../main.tex
+#+end_src
+
+#+begin_src tex :tangle sections/section4.tex
+\section{Discussion}%
+\label{sec:discussion}%
+
+Discussion of results requires sharing, which you can do using the supplied \textsc{Makefile}.
+See the commands listed in \Cref{app:implemented_make_commands}.
+
+and a Table goes here.
+#+end_src
+
+#+begin_src tex :tangle sections/section4.tex
+%% Local Variables:
+%% tex-main-file: "../main.tex"
+%% End:
+#+end_src
+
+
+** frontback/
+#+TOC: headlines 3 local
+
+*** abstract.tex
+
+The text to be inserted as abstract. It is wrapped in the correct
+environment when put into the [[main.tex][root file]].
+
+#+begin_src tex :tangle frontback/abstract.tex
+The \textsc{Re: Research} publication template is meant to simplify
+the writing of scientific manuscripts by creating a link between the
+data analysis, done with the \textsc{python} programming language, and
+the manuscript creation, built around the \LaTeX\xspace files. The premise is
+that any figure, table, or number given in the manuscript which is
+derived from your data should be placed in the manuscript by your
+code. This removes the necessity of keeping the manuscript up-to-date
+with changes in the input data. An additional bonus is an increase of
+reproducible research: by publishing the scripts which compute the
+manuscript content, anyone (including the original author) can verify
+its derivation.
+The template further provides a complete setup of \textsc{pgf}
+integration for figure creation with the \textsc{matplotlib} package,
+which allows to create vectorized figures utilizing the same font as
+the rest of the document.
+#+end_src
+
+*** appendix.tex
+
+One or more sections for the abstract. As for the [[abstract.tex][abstract]], the actual appendix-formatting takes place in the [[main.tex][root file]].
+
+#+begin_src tex :tangle frontback/appendix.tex
+\section{Implemented \textsc{make} commands}%
+\label{app:implemented_make_commands}%
+
+make bib
+make latex
+make all
+make clean
+make arxiv
+make publisher
+
+In 90\% of the cases, you want to run \textsc{make all}. 9\% are \textsc{make clean} to get
+rid of the temporary files created during the \LaTeX compilation process.
+#+end_src
+
+*** ack.tex
+
+Again, this file only contains the actual text of the acknowledgements, the formatting is handled in the [[main.tex][root file]].
+
+#+begin_src tex :tangle frontback/ack.tex
+Many ideas I had have been improved and implemented in StackOverflow discussion.
+#+end_src
+
+* Troubleshooting
+
+** ~pgf~ and rasterized elements
