@@ -1,0 +1,17 @@
+\newcommand{\abbr}[2]{\textit{#1} (#2)}  % Abbreviations
+
+\newcommand{\wording}[1]{\textcolor{red}{#1}}
+\newcommand{\source}{\textcolor{orange}{[citation needed]}}
+
+\newcommand{\ie}{i.e.\,}
+\newcommand{\eg}{e.g.\,}
+
+\pgftext[left,bottom]{\includegraphics[interpolate=true,width=0.738571in,height=0.738571in]{massalia_phase_fit-img0.png}}%
+
+\newcommand\inputpgf[2]{{
+\let\includegraphicsWithoutPath\includegraphics
+\renewcommand{\includegraphics}[2][]{\includegraphicsWithoutPath[##1]{#1/##2}}
+\input{#1/#2}
+}}
+
+\DeclareUnicodeCharacter{2212}{-}

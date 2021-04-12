@@ -1,0 +1,30 @@
+%! TEX root = ../main.tex
+
+\section{Results}%
+\label{sec:results}%
+\lipsum[3-5]
+
+\begin{figure}[t]
+  \input{gfx/hlines_demo.pgf}
+  \caption{Demo figure illustrating the default figure layout: colum-wide with a golden aspect ratio.}
+  \label{fig:hlines_demo}
+\end{figure}
+\lipsum[3-8]
+
+\begin{figure*}[t]
+  \input{gfx/matplotlib_release_dates.pgf}
+  \caption{Example to illustrate the double-column figure layout, as well as the connection between raw data and the manuscript: Editing any line in the matplotlib release data directly translates into this figure after invoking the appropriate \textsc{make} command.}
+  \label{fig:matplotlib_release_dates}
+\end{figure*}
+
+\lipsum[1-10]
+
+\begin{figure}[t]
+  \input{gfx/solution_space.pgf}
+  \caption{A figure with an aspect ratio of 1. Note that for \textsc{matplotlib}, the figure area includes the axes labels and annotations, hence the axes are not necessarily square even with equal aspect ratio.}
+  \label{fig:solution_space}
+\end{figure}
+
+%% Local Variables:
+%% tex-main-file: "../main.tex"
+%% End:

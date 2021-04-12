@@ -1,0 +1,118 @@
+% Set destination of article: publisher,arxiv.
+%
+% Setting at compile time via eg 'pdflatex "\def\destination{arxiv} \input{main.tex}"'
+% opentakes priority over the definition below
+\ifx\destination\undefined
+  \def\destination{arxiv}  % publisher,arxiv
+\fi
+
+\def\arxiv{arxiv}
+\def\publisher{publisher}
+
+\RequirePackage{snapshot}
+
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\PassOptionsToPackage{colorlinks=True,allcolors=RoyalBlue}{hyperlink}
+
+\ifx\destination\arxiv
+  \documentclass{article}
+  \pdfoutput=1	% ensure pdflatex when submitting to arXiv
+  \usepackage{aux/preprint}
+  \usepackage{natbib}
+  \usepackage{authblk}
+  % Alias author commands to mirror publisher
+  \let\address\affil
+\else
+  \documentclass[preprint,3p,authoryear,lefttitle]{elsarticle}
+  % \documentclass[preprint,5p,authoryear,twocolumn,lefttitle]{elsarticle}  % referee version
+  \journal{Icarus}
+\fi
+
+\usepackage{amsmath}
+\usepackage{aux/aas_macros}
+\usepackage{graphicx}
+\usepackage[title]{appendix}
+\usepackage{booktabs}
+\usepackage[skip=4pt]{caption}
+\usepackage{here}
+\usepackage[utf8]{inputenc}
+\usepackage{lipsum}
+\usepackage{pgf}
+\usepackage{tikz}
+\usepackage{url}
+\usepackage{xspace}
+\usepackage[colorlinks=True, allcolors=RoyalBlue]{hyperref}
+\usepackage[nameinlink]{cleveref}
+
+% \usepackage{lineno}
+% \linenumbers
+
+\input{aux/macros}
+\input{aux/stats}
+
+\begin{document}
+
+% ------
+\title{Re: Research - A publication template}
+
+% Authors
+\author[1]{Max Mahlke}
+
+\ifx\destination\publisher
+  \corref{cor}
+  \cortext[cor]{Corresponding author}
+  \ead{max.mahlke@oca.eu}  % email address of *most recent* author
+\fi
+
+% Affiliations
+\address[1]{Universit{\'e}
+  C{\^o}te d'Azur, Observatoire de la C{\^o}te d'Azur, CNRS, Laboratoire Lagrange, France}
+
+\ifx\destination\arxiv
+  \twocolumn[
+    \begin{@twocolumnfalse}
+      \maketitle
+      \begin{abstract}
+        \input{frontback/abstract}
+      \end{abstract}
+    \end{@twocolumnfalse}
+  ]
+\else
+  \begin{frontmatter}
+    \begin{abstract}
+      \input{frontback/abstract}
+    \end{abstract}
+    \begin{keyword}
+      Asteroids \sep Asteroids, Composition \sep Asteroids, Surfaces \sep Photometry
+    \end{keyword}
+  \end{frontmatter}
+\fi
+
+% Introction
+\input{sections/section1}
+% Methodology
+\input{sections/section2}
+% Results
+\input{sections/section3}
+% Discussion
+\input{sections/section4}
+
+\section*{Acknowledgements}%
+\label{sec:acknowledgements}%
+\input{frontback/ack}
+
+\ifx\destination\arxiv
+  \bibliographystyle{aux/arxiv}
+\else
+  \bibliographystyle{aux/publisher}
+  \biboptions{authoryear}
+\fi
+
+\bibliography{aux/bib}
+
+\clearpage
+
+% ------
+% Appendix
+\input{frontback/appendix}
+\end{document}

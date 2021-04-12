@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-04-09 Fri 16:52 -->
+<!-- 2021-04-12 Mon 12:48 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Re: Research</title>
@@ -229,65 +229,1720 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgf481bd2">Structure</a>
+<li><a href="#orga1b3a15">Motivation</a></li>
+<li><a href="#orgd0497f9">Template Structure</a></li>
+<li><a href="#org50baad5">Troubleshooting</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orga1b3a15" class="outline-2">
+<h2 id="orga1b3a15">Motivation</h2>
+<div class="outline-text-2" id="text-orga1b3a15">
+<p>
+This template aims to simplify the writing and sharing of
+publications, in particular of those which contain many figures, tables,
+or statistics derived from analysis data. I noticed that it commonly
+occured when I wrote a manuscript and placed the analysis numbers in
+the text, the input data or the results slightly changed and required
+to update the manuscript. This quickly lead to confusion: I was unsure whether
+all numbers and figures were up-to-date, or even worse, where a
+particular number came from exactly.
+</p>
+
+<p>
+The solution is simple: the analysis code should not only create the
+figures and compute the results, but also write them to <code>LaTeX</code>
+variables / files which I could input into the manuscript. This way,
+the numbers are always up-to-date, and if I or anyone else has a doubt
+about a specific number, I can look at the code which generated it
+(rather than trying to retrace my own analysis months later).
+</p>
+
+<p>
+This greatly simplifies writing and maintaining the manuscript, and
+contributes towards reproducible research, provided that the scripts
+(and, if possible, the data) are shared together with the
+manuscript. This is possible for example on <a href="https://arxiv.org">arXiv</a>, where you can
+upload a source archive.
+</p>
+
+<p>
+In this template, there are a collection of scripts to bridge the gap
+between <code>python</code> and <code>LaTeX</code>. I further added small shell scripts for
+compiling and cleaning the <code>TeX</code> directory, as well as creating source
+<code>tar.gz</code> archives which can later be sent to the publisher or uploaded
+to <a href="https://arxiv.org">arXiv</a>. These source archives automatically include only the files
+relevant to the manuscript compilation.
+</p>
+
+<p>
+Finally, I have added functions to create <code>pgf</code> figures with <code>matplotlib</code>. 
+These figures are created at compile time by <code>LaTeX</code> as vector graphics, giving
+infinite resolution and using the same font as the rest of the manuscript.
+The figures further are aware of the manuscript <code>\textwdith</code>.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgd0497f9" class="outline-2">
+<h2 id="orgd0497f9">Template Structure</h2>
+<div class="outline-text-2" id="text-orgd0497f9">
+<div id="text-table-of-contents">
 <ul>
-<li><a href="#orgd59f107">Main files</a></li>
-<li><a href="#orgde4b948">aux/</a></li>
-<li><a href="#org3b706f1">data/</a></li>
-<li><a href="#org698b320">frontback/</a></li>
-<li><a href="#orgda09337">gfx/</a></li>
-<li><a href="#orgbf98cb0">scripts/</a></li>
-<li><a href="#org92dd122">sections/</a></li>
-<li><a href="#org60ac27b">tables/</a></li>
-</ul>
-</li>
-<li><a href="#org87af071"><code>python</code> side</a></li>
-<li><a href="#org96a1f84"><code>LaTeX</code> side</a></li>
+<li><a href="#org86ed7a0">data/</a></li>
+<li><a href="#orgea94c46">scripts/</a></li>
+<li><a href="#org13d8be3">./</a></li>
+<li><a href="#orgb7d49c4">sections/</a></li>
+<li><a href="#org1e6b918">frontback/</a></li>
+<li><a href="#orge2e96c1">aux/</a></li>
+<li><a href="#org3b99f94">gfx/</a></li>
+<li><a href="#org9eecf00">tables/</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgf481bd2" class="outline-2">
-<h2 id="orgf481bd2">Structure</h2>
-<div class="outline-text-2" id="text-orgf481bd2">
+<div id="outline-container-org86ed7a0" class="outline-3">
+<h3 id="org86ed7a0">data/</h3>
+<div class="outline-text-3" id="text-org86ed7a0">
+<p>
+Data required to create the figures and tables. This directory is not
+included in the source <code>tar.gz</code> files which are meant to be submitted to arXiv or
+the publisher.
+</p>
+
+<p>
+Ideally, the data files stored here are reduced versions of the final
+analysis results: small disk usage while retaining the necessary
+information to reproduce the figures, tables, and numbers in the paper.
+</p>
+
+<p>
+As an example, I'm adding a small <code>csv</code> file of the <code>matplotlib</code> release dates.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-csv">version,date
+v2.2.4,2019-02-26
+v3.0.3,2019-02-26
+v3.0.2,2018-11-10
+v3.0.1,2018-11-10
+v3.0.0,2018-09-18
+v2.2.3,2018-08-10
+v2.2.2,2018-03-17
+v2.2.1,2018-03-16
+v2.2.0,2018-03-06
+v2.1.2,2018-01-18
+v2.1.1,2017-12-10
+v2.1.0,2017-10-07
+v2.0.2,2017-05-10
+v2.0.1,2017-05-02
+v2.0.0,2017-01-17
+v1.5.3,2016-09-09
+v1.5.2,2016-07-03
+v1.5.1,2016-01-10
+v1.5.0,2015-10-29
+v1.4.3,2015-02-16
+v1.4.2,2014-10-26
+v1.4.1,2014-10-18
+v1.4.0,2014-08-26
+</pre>
 </div>
-<div id="outline-container-orgd59f107" class="outline-3">
-<h3 id="orgd59f107">Main files</h3>
-</div>
-<div id="outline-container-orgde4b948" class="outline-3">
-<h3 id="orgde4b948">aux/</h3>
-</div>
-<div id="outline-container-org3b706f1" class="outline-3">
-<h3 id="org3b706f1">data/</h3>
-</div>
-<div id="outline-container-org698b320" class="outline-3">
-<h3 id="org698b320">frontback/</h3>
-</div>
-<div id="outline-container-orgda09337" class="outline-3">
-<h3 id="orgda09337">gfx/</h3>
-</div>
-<div id="outline-container-orgbf98cb0" class="outline-3">
-<h3 id="orgbf98cb0">scripts/</h3>
-</div>
-<div id="outline-container-org92dd122" class="outline-3">
-<h3 id="org92dd122">sections/</h3>
-</div>
-<div id="outline-container-org60ac27b" class="outline-3">
-<h3 id="org60ac27b">tables/</h3>
 </div>
 </div>
 
-<div id="outline-container-org87af071" class="outline-2">
-<h2 id="org87af071"><code>python</code> side</h2>
+<div id="outline-container-orgea94c46" class="outline-3">
+<h3 id="orgea94c46">scripts/</h3>
+<div class="outline-text-3" id="text-orgea94c46">
+<p>
+The <code>python</code> part of the template is in this directory. The scripts
+create and compute the figures, tables, and numbers presented in the
+article using the analysis results in the <a href="#org86ed7a0">data/</a> directory and store
+them in the <a href="#org3b99f94">gfx/</a>, <a href="#org9eecf00">tables/</a>, and <a href="#orgfa00e6b">aux/stats.tex</a> directories / file.
+</p>
+
+<p>
+I will demonstrate this in a minimal working example using <code>matplotlib</code> release dates (see the <a href="#org86ed7a0">data/</a> directory), which I found <a href="https://matplotlib.org/stable/gallery/lines_bars_and_markers/timeline.html">here</a>.
+</p>
 </div>
 
-<div id="outline-container-org96a1f84" class="outline-2">
-<h2 id="org96a1f84"><code>LaTeX</code> side</h2>
+<div id="outline-container-org5457cc3" class="outline-4">
+<h4 id="org5457cc3">figure_setup.py</h4>
+<div class="outline-text-4" id="text-org5457cc3">
+<p>
+This file handles the <code>matplotlib</code> default settings which
+give the figures in the paper a uniform look. It could easily be
+merged with the <a href="#orgc60dbf0">create_figures.py</a> script, though I like to keep the
+setup and the figure code separate.
+</p>
+
+<p>
+Figures in the paper are saved in the <a href="https://ctan.org/pkg/pgf?lang=en">pgf</a> "format". This is the
+underlying <code>TeX</code> macros library of the famous <a href="https://texample.net/tikz/">TikZ</a> package. The figures
+are written as <code>TeX</code> commands to file by <code>matplotlib</code>. The advantages are
+outlined above, here I give the "drawback": very few lines of setup
+are necessary first.
+</p>
+
+<p>
+We start with some imports.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">import</span> matplotlib
+<span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+</pre>
+</div>
+
+<p>
+Because our <code>pgf</code> graphics are drawn into the <code>pdf</code> document, we want to make sure that the
+figure width matches the <code>\textwidth</code> in the document. <code>matplotlib</code> figure sizes are by default in inches. The <code>textwidth</code> is given in the <code>TeX</code> logfile:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash">$ grep textwidth main.log
+845:* \<span style="color: #dcaeea;">textwidth</span>=522.0pt
+</pre>
+</div>
+
+<p>
+It depends on the document style file <b>and will in general be different
+between the preprint and the publisher version.</b> Remember to adapt this
+value in the function below before recompiling the document and
+submitting to a new destination.
+</p>
+
+<p>
+We define a function which accepts a width in units of <code>\textwidth</code> and
+the ratio of the figure width to the figure height, and returns the
+corresponding figure size in inches. Note that axes labels, figure
+titles, and other annotations outside the plotting area still count to
+the figure area in <code>matplotlib</code> terms. Plotting a figure with equal
+aspect ratio does hence not necessarily yield square axes. You can
+find more information in <a href="https://stackoverflow.com/questions/36040605/matplotlibs-figure-and-axes-explanation">this StackOverflow post</a>.
+Furthermore, don't forget to apply <code>plt.tight_layout()</code> before saving
+the figure to remove padding around the figure.
+</p>
+
+<p>
+The default aspect ratio (width:height) is the golden ratio.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #dcaeea;">GOLDEN_RATIO</span> = <span style="color: #51afef;">(</span>np.sqrt<span style="color: #c678dd;">(</span>5<span style="color: #c678dd;">)</span> + 1<span style="color: #51afef;">)</span> / 2 
+
+<span style="color: #51afef;">def</span> <span style="color: #c678dd;">figsize</span><span style="color: #51afef;">(</span>width=0.5, aspect=GOLDEN_RATIO<span style="color: #51afef;">)</span>:
+    <span style="color: #83898d;">"""Compute the figure width and height in inches.</span>
+
+<span style="color: #83898d;">    Parameters</span>
+<span style="color: #83898d;">    ==========</span>
+<span style="color: #83898d;">    width : float</span>
+<span style="color: #83898d;">        The figure width in units of the \textwidth. Default is 0.5,</span>
+<span style="color: #83898d;">        corresponding to one columnwidth.</span>
+<span style="color: #83898d;">    aspect : float</span>
+<span style="color: #83898d;">        The aspect ratio (width / height) of the figure. Default is the golden ratio.</span>
+
+<span style="color: #83898d;">    Returns</span>
+<span style="color: #83898d;">    =======</span>
+<span style="color: #83898d;">    tuple</span>
+<span style="color: #83898d;">        The figure width and height in inches.</span>
+<span style="color: #83898d;">    """</span>
+    TEXTWIDTH = 522  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">in points, from the LaTeX document log file</span>
+    POINTS_TO_INCHES = 1 / 72.27
+
+    figure_width = TEXTWIDTH * POINTS_TO_INCHES * width
+    figure_height = figure_width / aspect
+
+    <span style="color: #51afef;">return</span> figure_width, figure_height
+</pre>
+</div>
+
+<p>
+Now, we edit the <code>matplotlib</code> figure defaults to our liking by updating
+the <code>rcParams</code> dictionary. You can find a list of the editable
+configuration parameters <a href="https://matplotlib.org/stable/tutorials/introductory/customizing.html">here</a>. 
+</p>
+
+<p>
+The most important parameters below are the following:
+</p>
+
+<ul class="org-ul">
+<li><code>"backend" : "pgf"</code> &gt; Required to export figures to the <code>pgf</code> format</li>
+<li><code>"backend_fallback" : True</code> &gt; Sometimes, we still want to save as <code>png</code> or <code>pdf</code></li>
+<li><code>"text.usetex : True</code> &gt; Enable <code>TeX</code> support for figure labels, legends, &#x2026;</li>
+<li><code>"pgf.preamble":</code> (string of <code>TeX</code> <code>\usepackage</code> commands) ~ &gt; <code>TeX</code> packages which are required for the figure creation. Most importantly, fonts.</li>
+<li><code>"figure.figsize" : figsize(width=0.5)</code> &gt; Calling our custom figure size function. Now figures are by default one column wide.</li>
+<li><code>"font.family" : "serif"</code> &gt; <code>matplotlib</code> by default sets the figure font to sans-serif. If your manuscript uses a serif-font, this is the setting to set. Otherwise, comment this line.</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #dcaeea;">SETUP</span> = <span style="color: #51afef;">{</span>
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">----------</span>
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">GENERAL SET-UP</span>
+    <span style="color: #98be65;">"backend"</span>              : <span style="color: #98be65;">"pgf"</span>,         <span style="color: #5B6268;"># </span><span style="color: #5B6268;">To export figures to .pgf</span>
+    <span style="color: #98be65;">"backend_fallback"</span>     : <span style="color: #a9a1e1;">True</span>,          <span style="color: #5B6268;"># </span><span style="color: #5B6268;">If not compatible,</span>
+                                            <span style="color: #5B6268;">#  </span><span style="color: #5B6268;">mpl will find a compatible one</span>
+    <span style="color: #98be65;">"toolbar"</span>              : <span style="color: #98be65;">"toolbar2"</span>,    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">"toolbar2", "toolmanager", "None"</span>
+    <span style="color: #98be65;">"timezone"</span>             : <span style="color: #98be65;">"UTC"</span>,         <span style="color: #5B6268;"># </span><span style="color: #5B6268;">a pytz timezone string,</span>
+                                            <span style="color: #5B6268;"># </span><span style="color: #5B6268;">eg US/Central or Europe/Paris</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">----------</span>
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">LaTeX SET-UP</span>
+    <span style="color: #98be65;">"text.usetex"</span>          : <span style="color: #a9a1e1;">True</span>,          <span style="color: #5B6268;"># </span><span style="color: #5B6268;">use inline math for ticks</span>
+    <span style="color: #98be65;">"pgf.rcfonts"</span>          : <span style="color: #a9a1e1;">False</span>,         <span style="color: #5B6268;"># </span><span style="color: #5B6268;">setup fonts from rc parameters</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Packages required for figure compilation:</span>
+    <span style="color: #98be65;">"pgf.preamble"</span>:        
+                    r<span style="color: #98be65;">"\usepackage{amsmath} "</span>
+                    r<span style="color: #98be65;">"\usepackage[utf8x]{inputenc} "</span>
+                    r<span style="color: #98be65;">"\usepackage[T1]{fontenc} "</span>
+                    r<span style="color: #98be65;">"\usepackage{txfonts} "</span> <span style="color: #5B6268;"># </span><span style="color: #5B6268;">txfonts are used by A&amp;A Journal</span>
+                    r<span style="color: #98be65;">"\usepackage[default]{sourcesanspro} "</span>
+                    r<span style="color: #98be65;">"\usepackage{pgfplots} "</span>
+                    r<span style="color: #98be65;">"\usepgfplotslibrary{external} "</span>
+                    r<span style="color: #98be65;">"\tikzexternalize "</span>
+                    r<span style="color: #98be65;">"\usepackage{xcolor} "</span>
+                    ,
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">----------</span>
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">GENERAL</span>
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">----------</span>
+    <span style="color: #98be65;">"figure.figsize"</span>       : figsize<span style="color: #c678dd;">(</span>width=0.5<span style="color: #c678dd;">)</span>,
+    <span style="color: #98be65;">"savefig.dpi"</span>          : 400,
+    <span style="color: #98be65;">"font.size"</span>            : 10, 
+    <span style="color: #98be65;">"font.family"</span>          : <span style="color: #98be65;">"serif"</span>,
+    <span style="color: #98be65;">"text.color"</span>           : <span style="color: #98be65;">"</span><span style="color: #ffffff; background-color: #000000;">#000000</span><span style="color: #98be65;">"</span>,
+    <span style="color: #98be65;">"axes.facecolor"</span>       : <span style="color: #98be65;">"</span><span style="color: #000000; background-color: #ffffff;">#ffffff</span><span style="color: #98be65;">"</span>,      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">axes background color</span>
+    <span style="color: #98be65;">"axes.edgecolor"</span>       : <span style="color: #98be65;">"</span><span style="color: #ffffff; background-color: #000000;">#000000</span><span style="color: #98be65;">"</span>,       <span style="color: #5B6268;"># </span><span style="color: #5B6268;">axes edge color</span>
+    <span style="color: #98be65;">"axes.linewidth"</span>       : 0.5,           <span style="color: #5B6268;"># </span><span style="color: #5B6268;">edge linewidth</span>
+    <span style="color: #98be65;">"axes.grid"</span>            : <span style="color: #a9a1e1;">False</span>,         <span style="color: #5B6268;"># </span><span style="color: #5B6268;">display grid or not</span>
+    <span style="color: #98be65;">"axes.titlesize"</span>       : <span style="color: #98be65;">"large"</span>,  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">fontsize of the axes title</span>
+    <span style="color: #98be65;">"axes.labelsize"</span>       : <span style="color: #98be65;">"small"</span>, <span style="color: #5B6268;"># </span><span style="color: #5B6268;">fontsize of the x any y labels</span>
+    <span style="color: #98be65;">"axes.labelcolor"</span>      : <span style="color: #98be65;">"black"</span>,
+    <span style="color: #98be65;">"axes.axisbelow"</span>       : <span style="color: #a9a1e1;">True</span>,   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">whether axis gridlines and ticks are</span>
+                                     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">below the axes elements (lines, text)</span>
+    <span style="color: #98be65;">"axes.xmargin"</span>         : 0,
+    <span style="color: #98be65;">"axes.ymargin"</span>         : 0,
+    <span style="color: #98be65;">"axes.spines.top"</span>      : <span style="color: #a9a1e1;">True</span>,
+    <span style="color: #98be65;">"axes.spines.right"</span>    : <span style="color: #a9a1e1;">True</span>,
+    <span style="color: #98be65;">"xtick.major.size"</span>     : 4,      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">major tick size in points</span>
+    <span style="color: #98be65;">"xtick.minor.size"</span>     : 2,      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">minor tick size in points</span>
+    <span style="color: #98be65;">"xtick.major.pad"</span>      : 2,      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">distance to major tick label in points</span>
+    <span style="color: #98be65;">"xtick.major.width"</span>    : 0.5,
+    <span style="color: #98be65;">"xtick.minor.width"</span>    : 0.3,
+    <span style="color: #98be65;">"xtick.minor.visible"</span>  : <span style="color: #a9a1e1;">True</span>,
+    <span style="color: #98be65;">"xtick.minor.pad"</span>      : 2,    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">distance to the minor tick label in points</span>
+    <span style="color: #98be65;">"xtick.color"</span>          : <span style="color: #98be65;">"black"</span>, <span style="color: #5B6268;"># </span><span style="color: #5B6268;">color of the tick labels</span>
+    <span style="color: #98be65;">"xtick.top"</span>            : <span style="color: #a9a1e1;">True</span>,
+    <span style="color: #98be65;">"xtick.labelsize"</span>      : <span style="color: #98be65;">"8"</span>,  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">fontsize of the tick labels</span>
+    <span style="color: #98be65;">"xtick.direction"</span>      : <span style="color: #98be65;">"in"</span>,     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">direction: in or out</span>
+    <span style="color: #98be65;">"ytick.major.size"</span>     : 4,      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">major tick size in points</span>
+    <span style="color: #98be65;">"ytick.major.width"</span>    : 0.5,
+    <span style="color: #98be65;">"ytick.minor.width"</span>    : 0.2,
+    <span style="color: #98be65;">"ytick.minor.size"</span>     : 2,      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">minor tick size in points</span>
+    <span style="color: #98be65;">"ytick.major.pad"</span>      : 2,      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">distance to major tick label in points</span>
+    <span style="color: #98be65;">"ytick.minor.pad"</span>      : 2,   <span style="color: #5B6268;"># </span><span style="color: #5B6268;">distance to the minor tick label in points</span>
+    <span style="color: #98be65;">"ytick.major.width"</span>    : 0.5,
+    <span style="color: #98be65;">"ytick.minor.width"</span>    : 0.3,
+    <span style="color: #98be65;">"ytick.right"</span>          : <span style="color: #a9a1e1;">True</span>,
+    <span style="color: #98be65;">"ytick.color"</span>          : <span style="color: #98be65;">"black"</span>, <span style="color: #5B6268;"># </span><span style="color: #5B6268;">color of the tick labels</span>
+    <span style="color: #98be65;">"ytick.labelsize"</span>      : <span style="color: #98be65;">"8"</span>,  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">fontsize of the tick labels</span>
+    <span style="color: #98be65;">"ytick.direction"</span>      : <span style="color: #98be65;">"in"</span>,     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">direction: in or out</span>
+    <span style="color: #98be65;">"ytick.minor.visible"</span>  : <span style="color: #a9a1e1;">True</span>,
+    <span style="color: #98be65;">"grid.color"</span>           : <span style="color: #98be65;">"black"</span>, <span style="color: #5B6268;"># </span><span style="color: #5B6268;">grid color</span>
+    <span style="color: #98be65;">"grid.linestyle"</span>       : <span style="color: #98be65;">":"</span>,      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">dotted</span>
+    <span style="color: #98be65;">"grid.linewidth"</span>       : <span style="color: #98be65;">"0.2"</span>,    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">in points</span>
+    <span style="color: #98be65;">"legend.fontsize"</span>      : <span style="color: #98be65;">"small"</span>,
+    <span style="color: #98be65;">"legend.fancybox"</span>      : <span style="color: #a9a1e1;">False</span>,  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">if True, use a rounded box for the</span>
+                                     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">legend, else a rectangle</span>
+    <span style="color: #98be65;">"lines.linewidth"</span>      : 1.0,           <span style="color: #5B6268;"># </span><span style="color: #5B6268;">line width in points</span>
+    <span style="color: #98be65;">"lines.antialiased"</span>    : <span style="color: #a9a1e1;">True</span>,          <span style="color: #5B6268;"># </span><span style="color: #5B6268;">render lines in antialised</span>
+
+<span style="color: #51afef;">}</span>
+</pre>
+</div>
+
+<p>
+And finally, we apply these new default settings.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">matplotlib.rcParams.update<span style="color: #51afef;">(</span>SETUP<span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc60dbf0" class="outline-4">
+<h4 id="orgc60dbf0">create_figures.py</h4>
+<div class="outline-text-4" id="text-orgc60dbf0">
+<p>
+This script creates the figures included in the paper. I write one function for each figure, and give the same name to the function, the figure filename, and the figure label in the <code>LaTeX</code> manuscript.
+</p>
+
+<p>
+To avoid having to edit the script every time we want to (re)compile a figure or change the output format, we add a rudimentary command line argument support.
+</p>
+
+<p>
+We start again with imports, note that we import the <a href="#org5457cc3">figure_setup.py</a> script to apply our <code>matplotlib</code> defaults.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">from</span> datetime <span style="color: #51afef;">import</span> datetime
+<span style="color: #51afef;">import</span> os
+<span style="color: #51afef;">import</span> sys
+
+<span style="color: #51afef;">import</span> matplotlib.dates <span style="color: #51afef;">as</span> mdates
+<span style="color: #51afef;">import</span> matplotlib.pyplot <span style="color: #51afef;">as</span> plt
+<span style="color: #51afef;">import</span> numpy <span style="color: #51afef;">as</span> np
+<span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+
+<span style="color: #51afef;">import</span> figure_setup <span style="color: #51afef;">as</span> fs
+
+<span style="color: #dcaeea;">PATH_GFX</span> = os.path.join<span style="color: #51afef;">(</span>os.path.dirname<span style="color: #c678dd;">(</span>__file__<span style="color: #c678dd;">)</span>, <span style="color: #98be65;">'../gfx/'</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+
+<p>
+Now we define functions, one for each figure. The code of the figures
+is not relevant to this explanation.
+</p>
+
+<p>
+Note that the figure created with the <code>plt.subplots()</code> command has a
+default size of one column width thanks to the defaults set above. The
+file format (e.g. <code>pgf</code>, <code>pdf</code>) is added as an argument of the function to
+allow easy command-line access, implemented below.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">def</span> <span style="color: #c678dd;">hlines_demo</span><span style="color: #51afef;">(</span>FORMAT<span style="color: #51afef;">)</span>:
+    <span style="color: #83898d;">"""Plot a randomly chosen matplotlib example to illustrate the default</span>
+<span style="color: #83898d;">    plot layout.</span>
+
+<span style="color: #83898d;">    Example adapted from</span>
+<span style="color: #83898d;">    https://matplotlib.org/stable/gallery/lines_bars_and_markers/vline_hline_demo.html</span>
+
+<span style="color: #83898d;">    Parameters</span>
+<span style="color: #83898d;">    ==========</span>
+<span style="color: #83898d;">    FORMAT : str</span>
+<span style="color: #83898d;">        File format to save the figure in.</span>
+<span style="color: #83898d;">    """</span>
+    <span style="color: #dcaeea;">fig</span>, <span style="color: #dcaeea;">ax</span> = plt.subplots<span style="color: #51afef;">()</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Fixing random state for reproducibility</span>
+    np.random.seed<span style="color: #51afef;">(</span>19680801<span style="color: #51afef;">)</span>
+
+    <span style="color: #dcaeea;">t</span> = np.arange<span style="color: #51afef;">(</span>0.0, 5.0, 0.1<span style="color: #51afef;">)</span>
+    <span style="color: #dcaeea;">s</span> = np.exp<span style="color: #51afef;">(</span>-t<span style="color: #51afef;">)</span> + np.sin<span style="color: #51afef;">(</span>2 * np.pi * t<span style="color: #51afef;">)</span> + 1
+    <span style="color: #dcaeea;">nse</span> = np.random.normal<span style="color: #51afef;">(</span>0.0, 0.3, t.shape<span style="color: #51afef;">)</span> * s
+
+    ax.plot<span style="color: #51afef;">(</span>t, s + nse, <span style="color: #98be65;">"^"</span>, c=<span style="color: #98be65;">'black'</span><span style="color: #51afef;">)</span>
+    ax.vlines<span style="color: #51afef;">(</span>t, <span style="color: #c678dd;">[</span>0<span style="color: #c678dd;">]</span>, s, color=<span style="color: #98be65;">'black'</span><span style="color: #51afef;">)</span>
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">By using ``transform=ax.get_xaxis_transform()`` the y coordinates are scaled</span>
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">such that 0 maps to the bottom of the axes and 1 to the top.</span>
+    ax.vlines<span style="color: #51afef;">(</span><span style="color: #c678dd;">[</span>1, 2<span style="color: #c678dd;">]</span>, 0, 1, transform=ax.get_xaxis_transform<span style="color: #c678dd;">()</span>, colors=<span style="color: #98be65;">'r'</span><span style="color: #51afef;">)</span>
+    ax.<span style="color: #c678dd;">set</span><span style="color: #51afef;">(</span>xlabel=<span style="color: #c678dd;">(</span><span style="color: #98be65;">"Time / s"</span><span style="color: #c678dd;">)</span>, ylabel=<span style="color: #c678dd;">(</span><span style="color: #98be65;">"Triangles"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+
+    plt.tight_layout<span style="color: #51afef;">()</span>
+    fig.savefig<span style="color: #51afef;">(</span>os.path.join<span style="color: #c678dd;">(</span>PATH_GFX, f<span style="color: #98be65;">"hlines_demo.</span>{FORMAT}<span style="color: #98be65;">"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+
+<p>
+Now I define two more functions: One which is square, to demonstrate
+the aspect ratio in the manuscript, and one which is two columns
+wide. The latter is based on the <code>matplotlib</code> release dates data in the
+<a href="#org86ed7a0">data/</a> directory. From this could, it should be apparent that any
+changes to the <code>csv</code> file in the <a href="#org86ed7a0">data/</a> directory would immediatly
+translate into the figure (which then translates into the manuscript).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">def</span> <span style="color: #c678dd;">solution_space</span><span style="color: #51afef;">(</span>FORMAT<span style="color: #51afef;">)</span>:
+    <span style="color: #83898d;">"""Plot solution space to demonstrate a square figure. This is an</span>
+<span style="color: #83898d;">    adapted matplotlib example, from</span>
+
+<span style="color: #83898d;">    https://matplotlib.org/stable/gallery/images_contours_and_fields/</span>
+<span style="color: #83898d;">    contours_in_optimization_demo.html</span>
+
+<span style="color: #83898d;">    Parameters</span>
+<span style="color: #83898d;">    ==========</span>
+<span style="color: #83898d;">    FORMAT : str</span>
+<span style="color: #83898d;">        File format to save the figure in.</span>
+<span style="color: #83898d;">    """</span>
+    <span style="color: #dcaeea;">fig</span>, <span style="color: #dcaeea;">ax</span> = plt.subplots<span style="color: #51afef;">(</span>figsize=fs.figsize<span style="color: #c678dd;">(</span>aspect=1<span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Set up survey vectors</span>
+    xvec = np.linspace<span style="color: #51afef;">(</span>0.001, 4.0, 101<span style="color: #51afef;">)</span>
+    yvec = np.linspace<span style="color: #51afef;">(</span>0.001, 4.0, 105<span style="color: #51afef;">)</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Set up survey matrices.  Design disk loading and gear ratio.</span>
+    <span style="color: #dcaeea;">x1</span>, <span style="color: #dcaeea;">x2</span> = np.meshgrid<span style="color: #51afef;">(</span>xvec, yvec<span style="color: #51afef;">)</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Evaluate some stuff to plot</span>
+    obj = x1**2 + x2**2 - 2*x1 - 2*x2 + 2
+    g1 = -<span style="color: #51afef;">(</span>3*x1 + x2 - 5.5<span style="color: #51afef;">)</span>
+    g2 = -<span style="color: #51afef;">(</span>x1 + 2*x2 - 4.5<span style="color: #51afef;">)</span>
+    g3 = 0.8 + x1**-3 - x2
+
+    cntr = ax.contour<span style="color: #51afef;">(</span>x1, x2, obj, <span style="color: #c678dd;">[</span>0.01, 0.1, 0.5, 1, 2, 4, 8, 16<span style="color: #c678dd;">]</span>,
+                    colors=<span style="color: #98be65;">'black'</span><span style="color: #51afef;">)</span>
+    ax.clabel<span style="color: #51afef;">(</span>cntr, fmt=<span style="color: #98be65;">"%2.1f"</span>, use_clabeltext=<span style="color: #a9a1e1;">True</span><span style="color: #51afef;">)</span>
+
+    cg1 = ax.contour<span style="color: #51afef;">(</span>x1, x2, g1, <span style="color: #c678dd;">[</span>0<span style="color: #c678dd;">]</span>, colors=<span style="color: #98be65;">'sandybrown'</span><span style="color: #51afef;">)</span>
+    cg2 = ax.contour<span style="color: #51afef;">(</span>x1, x2, g2, <span style="color: #c678dd;">[</span>0<span style="color: #c678dd;">]</span>, colors=<span style="color: #98be65;">'orangered'</span><span style="color: #51afef;">)</span>
+    cg3 = ax.contour<span style="color: #51afef;">(</span>x1, x2, g3, <span style="color: #c678dd;">[</span>0<span style="color: #c678dd;">]</span>, colors=<span style="color: #98be65;">'mediumblue'</span><span style="color: #51afef;">)</span>
+
+    ax.<span style="color: #c678dd;">set</span><span style="color: #51afef;">(</span>xlim=<span style="color: #c678dd;">(</span>0, 4<span style="color: #c678dd;">)</span>, ylim=<span style="color: #c678dd;">(</span>0, 4<span style="color: #c678dd;">)</span>, xlabel=<span style="color: #98be65;">'x / AU'</span>, ylabel=<span style="color: #98be65;">'y / AU'</span><span style="color: #51afef;">)</span>
+
+    plt.tight_layout<span style="color: #51afef;">()</span>
+    fig.savefig<span style="color: #51afef;">(</span>os.path.join<span style="color: #c678dd;">(</span>PATH_GFX, f<span style="color: #98be65;">"solution_space.</span>{FORMAT}<span style="color: #98be65;">"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+
+
+<span style="color: #51afef;">def</span> <span style="color: #c678dd;">matplotlib_release_dates</span><span style="color: #51afef;">(</span>FORMAT<span style="color: #51afef;">)</span>:
+    <span style="color: #83898d;">"""Plot matplotlib release dates to showcase a two-column figure.</span>
+
+<span style="color: #83898d;">    Example adapted from</span>
+<span style="color: #83898d;">    https://matplotlib.org/stable/gallery/lines_bars_and_markers/timeline.html</span>
+
+<span style="color: #83898d;">    Parameters</span>
+<span style="color: #83898d;">    ==========</span>
+<span style="color: #83898d;">    FORMAT : str</span>
+<span style="color: #83898d;">        File format to save the figure in.</span>
+<span style="color: #83898d;">    """</span>
+    fig, ax = plt.subplots<span style="color: #51afef;">(</span>figsize=fs.figsize<span style="color: #c678dd;">(</span>width=1, aspect=2<span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Read in the data</span>
+    data = pd.read_csv<span style="color: #51afef;">(</span>os.path.join<span style="color: #c678dd;">(</span>PATH_GFX, <span style="color: #98be65;">"../data/release_dates.csv"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+    names = data.version
+    dates = data.date
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Convert date strings (e.g. 2014-10-18) to datetime</span>
+    dates = <span style="color: #51afef;">[</span>datetime.strptime<span style="color: #c678dd;">(</span>d, <span style="color: #98be65;">"%Y-%m-%d"</span><span style="color: #c678dd;">)</span> <span style="color: #51afef;">for</span> d <span style="color: #51afef;">in</span> dates<span style="color: #51afef;">]</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Choose some nice levels</span>
+    levels = np.tile<span style="color: #51afef;">(</span><span style="color: #c678dd;">[</span>-5, 5, -3, 3, -1, 1<span style="color: #c678dd;">]</span>,
+                    <span style="color: #c678dd;">int</span><span style="color: #c678dd;">(</span>np.ceil<span style="color: #98be65;">(</span><span style="color: #c678dd;">len</span><span style="color: #da8548;">(</span>dates<span style="color: #da8548;">)</span>/6<span style="color: #98be65;">)</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)[</span>:<span style="color: #c678dd;">len</span><span style="color: #c678dd;">(</span>dates<span style="color: #c678dd;">)</span><span style="color: #51afef;">]</span>
+
+    ax.vlines<span style="color: #51afef;">(</span>dates, 0, levels, color=<span style="color: #98be65;">"tab:red"</span><span style="color: #51afef;">)</span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">The vertical stems.</span>
+    ax.plot<span style="color: #51afef;">(</span>dates, np.zeros_like<span style="color: #c678dd;">(</span>dates<span style="color: #c678dd;">)</span>, <span style="color: #98be65;">"-o"</span>,
+            color=<span style="color: #98be65;">"k"</span>, markerfacecolor=<span style="color: #98be65;">"w"</span><span style="color: #51afef;">)</span>  <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Baseline and markers on it.</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">annotate lines</span>
+    <span style="color: #51afef;">for</span> d, l, r <span style="color: #51afef;">in</span> <span style="color: #c678dd;">zip</span><span style="color: #51afef;">(</span>dates, levels, names<span style="color: #51afef;">)</span>:
+        ax.annotate<span style="color: #51afef;">(</span>r, xy=<span style="color: #c678dd;">(</span>d, l<span style="color: #c678dd;">)</span>,
+                    xytext=<span style="color: #c678dd;">(</span>-3, np.sign<span style="color: #98be65;">(</span>l<span style="color: #98be65;">)</span>*3<span style="color: #c678dd;">)</span>, textcoords=<span style="color: #98be65;">"offset points"</span>,
+                    horizontalalignment=<span style="color: #98be65;">"right"</span>,
+                    verticalalignment=<span style="color: #98be65;">"bottom"</span> <span style="color: #51afef;">if</span> l &gt; 0 <span style="color: #51afef;">else</span> <span style="color: #98be65;">"top"</span><span style="color: #51afef;">)</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">format xaxis with 4 month intervals</span>
+    ax.xaxis.set_major_locator<span style="color: #51afef;">(</span>mdates.MonthLocator<span style="color: #c678dd;">(</span>interval=4<span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+    ax.xaxis.set_major_formatter<span style="color: #51afef;">(</span>mdates.DateFormatter<span style="color: #c678dd;">(</span><span style="color: #98be65;">"%b %Y"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+    plt.setp<span style="color: #51afef;">(</span>ax.get_xticklabels<span style="color: #c678dd;">()</span>, rotation=30, ha=<span style="color: #98be65;">"right"</span><span style="color: #51afef;">)</span>
+    ax.yaxis.set_visible<span style="color: #51afef;">(</span><span style="color: #a9a1e1;">False</span><span style="color: #51afef;">)</span>
+
+    plt.tight_layout<span style="color: #51afef;">()</span>
+    fig.savefig<span style="color: #51afef;">(</span>os.path.join<span style="color: #c678dd;">(</span>PATH_GFX, f<span style="color: #98be65;">"matplotlib_release_dates.</span>{FORMAT}<span style="color: #98be65;">"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+
+<p>
+Now we add the command line logic. The idea is to have the figure name
+as mandatory argument, the format is optional. If the script is called
+with the <code>--all</code> flag, all figures are compiled.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash">python create_figures.py example_figure
+python create_figures.py example_figure --format pdf
+python create_figures.py --all
+</pre>
+</div>
+
+<p>
+We keep a dictionary associating the figure name and the function
+which creates it. In principle, we could exploit that figure and
+function share their names, though using a dictionary is a simple way
+of implementing it.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">if</span> <span style="color: #c678dd;">__name__</span> == <span style="color: #98be65;">"__main__"</span>:
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">figure_name : figure_function</span>
+    FIGURE_FUNCTIONS = <span style="color: #51afef;">{</span>
+        <span style="color: #98be65;">"hlines_demo"</span>: hlines_demo,
+        <span style="color: #98be65;">"solution_space"</span>: solution_space,
+        <span style="color: #98be65;">"matplotlib_release_dates"</span>: matplotlib_release_dates,
+    <span style="color: #51afef;">}</span>
+
+</pre>
+</div>
+
+<p>
+Command-line arguments are accessible via the <code>sys.argv</code> list. We also
+add help messages in case the script is called with an insufficient
+amount of arguments. 
+</p>
+<div class="org-src-container">
+<pre class="src src-python">    <span style="color: #51afef;">if</span> <span style="color: #c678dd;">len</span><span style="color: #51afef;">(</span>sys.argv<span style="color: #51afef;">)</span> &lt; 2:
+        <span style="color: #51afef;">print</span><span style="color: #51afef;">(</span><span style="color: #98be65;">"Provide a figure name to compile it. Choose from:"</span><span style="color: #51afef;">)</span>
+        <span style="color: #51afef;">print</span><span style="color: #51afef;">(</span><span style="color: #c678dd;">list</span><span style="color: #c678dd;">(</span>FIGURE_FUNCTIONS.keys<span style="color: #98be65;">()</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+        sys.<span style="color: #a9a1e1;">exit</span><span style="color: #51afef;">()</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Get the format if it was specified on the command line</span>
+    <span style="color: #51afef;">if</span> <span style="color: #98be65;">"--format"</span> <span style="color: #51afef;">in</span> sys.<span style="color: #dcaeea;">argv</span>:
+       idx = np.where<span style="color: #51afef;">(</span>sys.argv == <span style="color: #98be65;">"--format"</span><span style="color: #51afef;">)[</span>0<span style="color: #51afef;">]</span> + 1
+       FORMAT = sys.argv<span style="color: #51afef;">[</span>idx<span style="color: #51afef;">]</span>
+    <span style="color: #51afef;">else</span>:
+       FORMAT = <span style="color: #98be65;">"pgf"</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Call the figure function</span>
+    <span style="color: #51afef;">if</span> <span style="color: #51afef;">not</span> <span style="color: #98be65;">"--all"</span> <span style="color: #51afef;">in</span> sys.argv:
+        figure_name = sys.argv<span style="color: #51afef;">[</span>1<span style="color: #51afef;">]</span>
+        FIGURE_FUNCTIONS<span style="color: #51afef;">[</span>figure_name<span style="color: #51afef;">](</span>FORMAT<span style="color: #51afef;">)</span>
+    <span style="color: #51afef;">else</span>:
+        <span style="color: #51afef;">for</span> figure, function <span style="color: #51afef;">in</span> FIGURE_FUNCTIONS.items<span style="color: #51afef;">()</span>:
+            <span style="color: #51afef;">print</span><span style="color: #51afef;">(</span>f<span style="color: #98be65;">"Compiling </span>{figure}<span style="color: #98be65;">.."</span><span style="color: #51afef;">)</span>
+            function<span style="color: #51afef;">(</span>FORMAT<span style="color: #51afef;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge16d9ed" class="outline-4">
+<h4 id="orge16d9ed">compute_stats.py</h4>
+<div class="outline-text-4" id="text-orge16d9ed">
+<p>
+Statistics refers to numbers which may be included in the text but are
+derived from the data. An example would be a sample size, which may
+change throughout the analysis and the editing of the manuscript. Here, I use the number
+of <code>matplotlib</code> versions and the earliest and latest releases as examples. It should be
+apparant from the code that if the <a href="#org86ed7a0">data/</a> changed (e.g. a new version
+comes out while writing the article), so would the variables defined
+here and printed in the manuscript.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">import</span> os
+<span style="color: #51afef;">import</span> sys
+
+<span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+</pre>
+</div>
+
+<p>
+I am not aware of any package which makes it easy to write <code>python</code>
+variables to <code>LaTeX</code> code, so I write my own helper function. The exact
+value of the <code>LaTeX</code> variable depends on the <code>python</code> variable filetype:
+integers have commas as thousands-separators, floats have two digits
+after the dot, etc. This solution will likely not scale well (what if
+I want my integer with a decimal place for some reason?) so it works
+for the minimum working example here.
+</p>
+
+<p>
+The <code>\xspace</code> command ensures that <code>LaTeX</code> adds a space after inserting
+the variable value into the text.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">def</span> <span style="color: #c678dd;">write_variables_to_file</span><span style="color: #51afef;">(</span>stats<span style="color: #51afef;">)</span>:
+    <span style="color: #83898d;">"""Write the variables to the aux/stats.tex file.</span>
+
+<span style="color: #83898d;">    Parameters</span>
+<span style="color: #83898d;">    ==========</span>
+<span style="color: #83898d;">    stats : dict</span>
+<span style="color: #83898d;">        Dictionary containing variable names as keys and their value and filetype as values.</span>
+<span style="color: #83898d;">        The LaTeX variable name cannot contain underscores.</span>
+<span style="color: #83898d;">    """</span>
+    PATH_STATS = os.path.join<span style="color: #51afef;">(</span>os.path.dirname<span style="color: #c678dd;">(</span>__file__<span style="color: #c678dd;">)</span>, <span style="color: #98be65;">"../aux/stats.tex"</span><span style="color: #51afef;">)</span>
+
+    <span style="color: #51afef;">with</span> <span style="color: #c678dd;">open</span><span style="color: #51afef;">(</span>PATH_STATS, <span style="color: #98be65;">"w"</span><span style="color: #51afef;">)</span> <span style="color: #51afef;">as</span> <span style="color: #dcaeea;">file_</span>:
+
+        <span style="color: #51afef;">for</span> name, value <span style="color: #51afef;">in</span> stats.items<span style="color: #51afef;">()</span>:
+
+            <span style="color: #51afef;">if</span> <span style="color: #98be65;">"_"</span> <span style="color: #51afef;">in</span> name:
+                <span style="color: #51afef;">print</span><span style="color: #51afef;">(</span>f<span style="color: #98be65;">"'_' is not a valid character in TeX variable names. "</span>
+                    f<span style="color: #98be65;">"Removing them from </span>{name}<span style="color: #98be65;">."</span><span style="color: #51afef;">)</span>
+
+            name = name.replace<span style="color: #51afef;">(</span><span style="color: #98be65;">"_"</span>, <span style="color: #98be65;">""</span><span style="color: #51afef;">)</span>
+
+            <span style="color: #dcaeea;">value</span>, <span style="color: #dcaeea;">type_</span> = value
+
+            <span style="color: #51afef;">if</span> type_ <span style="color: #51afef;">is</span> <span style="color: #c678dd;">int</span>:
+                file_.write<span style="color: #51afef;">(</span>f<span style="color: #98be65;">'\\def\\</span>{name}<span style="color: #98be65;">{{</span>{value:,}<span style="color: #98be65;">\\xspace}}\n'</span><span style="color: #51afef;">)</span>
+            <span style="color: #51afef;">elif</span> type_ <span style="color: #51afef;">is</span> <span style="color: #c678dd;">float</span>:
+                file_.write<span style="color: #51afef;">(</span>f<span style="color: #98be65;">'\\def\\</span>{name}<span style="color: #98be65;">{{</span>{value:.2f}<span style="color: #98be65;">\\xspace}}\n'</span><span style="color: #51afef;">)</span>
+            <span style="color: #51afef;">elif</span> type_ <span style="color: #51afef;">is</span> <span style="color: #c678dd;">str</span>:
+                file_.write<span style="color: #51afef;">(</span>f<span style="color: #98be65;">'\\def\\</span>{name}<span style="color: #98be65;">{{</span>{value}<span style="color: #98be65;">\\xspace}}\n'</span><span style="color: #51afef;">)</span>
+
+</pre>
+</div>
+
+<p>
+Now we define variables and write them to the file. Here, I add the number of <code>matplotlib</code> versions and the versions and dates of the earliest and latest releases.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">if</span> <span style="color: #c678dd;">__name__</span> == <span style="color: #98be65;">"__main__"</span>:
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Directories and data</span>
+    PATH_DATA = os.path.join<span style="color: #51afef;">(</span>os.path.dirname<span style="color: #c678dd;">(</span>__file__<span style="color: #c678dd;">)</span>, <span style="color: #98be65;">"../data/"</span><span style="color: #51afef;">)</span>
+    data = pd.read_csv<span style="color: #51afef;">(</span>os.path.join<span style="color: #c678dd;">(</span>PATH_DATA, <span style="color: #98be65;">"release_dates.csv"</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Dictionary storing the variable : (value, type) pairs</span>
+    STATS = <span style="color: #51afef;">{}</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Add the number of matplotlib versions</span>
+    STATS<span style="color: #51afef;">[</span><span style="color: #98be65;">"NVersions"</span><span style="color: #51afef;">]</span> = <span style="color: #51afef;">(</span><span style="color: #c678dd;">len</span><span style="color: #c678dd;">(</span>data<span style="color: #c678dd;">)</span>, <span style="color: #c678dd;">int</span><span style="color: #51afef;">)</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Get the earliest and latest version</span>
+    STATS<span style="color: #51afef;">[</span><span style="color: #98be65;">"VersionEarliest"</span><span style="color: #51afef;">]</span> = <span style="color: #51afef;">(</span>data.version.<span style="color: #c678dd;">min</span><span style="color: #c678dd;">()</span>, <span style="color: #c678dd;">str</span><span style="color: #51afef;">)</span> 
+    STATS<span style="color: #51afef;">[</span><span style="color: #98be65;">"VersionLatest"</span><span style="color: #51afef;">]</span> = <span style="color: #51afef;">(</span>data.version.<span style="color: #c678dd;">max</span><span style="color: #c678dd;">()</span>, <span style="color: #c678dd;">str</span><span style="color: #51afef;">)</span> 
+    STATS<span style="color: #51afef;">[</span><span style="color: #98be65;">"VersionEarliestDate"</span><span style="color: #51afef;">]</span> = <span style="color: #51afef;">(</span>data.loc<span style="color: #c678dd;">[</span>
+         data.version == data.version.<span style="color: #c678dd;">min</span><span style="color: #98be65;">()</span>, <span style="color: #98be65;">"date"</span>
+         <span style="color: #c678dd;">]</span>.values<span style="color: #c678dd;">[</span>0<span style="color: #c678dd;">]</span>, <span style="color: #c678dd;">str</span><span style="color: #51afef;">)</span>
+    STATS<span style="color: #51afef;">[</span><span style="color: #98be65;">"VersionLatestDate"</span><span style="color: #51afef;">]</span> = <span style="color: #51afef;">(</span>data.loc<span style="color: #c678dd;">[</span>
+         data.version == data.version.<span style="color: #c678dd;">min</span><span style="color: #98be65;">()</span>, <span style="color: #98be65;">"date"</span>
+         <span style="color: #c678dd;">]</span>.values<span style="color: #c678dd;">[</span>0<span style="color: #c678dd;">]</span>, <span style="color: #c678dd;">str</span><span style="color: #51afef;">)</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">And write to file</span>
+    write_variables_to_file<span style="color: #51afef;">(</span>STATS<span style="color: #51afef;">)</span>
+    
+</pre>
+</div>
+
+<p>
+As you can see, we are putting the code which computes the variable
+value right next to the variable which we then place into the
+manuscript. Later, this makes it easy for anyone to tell how a value was derived
+in the analysis.
+</p>
+
+<p>
+After running this file, the <a href="#orgfa00e6b">stats.tex</a> file contains these lines:
+</p>
+
+<pre class="example">
+\def\NVersions{23\xspace}
+\def\VersionEarliest{v1.4.0\xspace}
+\def\VersionLatest{v3.0.3\xspace}
+\def\VersionEarliestDate{2014-08-26\xspace}
+\def\VersionLatestDate{2014-08-26\xspace}
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org0a65de4" class="outline-4">
+<h4 id="org0a65de4">create_tables.py</h4>
+<div class="outline-text-4" id="text-org0a65de4">
+<p>
+This follows the same prinicple as <a href="#orge16d9ed">compute_stats.py</a>: we write the <code>LaTeX</code> code using <code>python</code>.
+Here, I write the matplotlib versions and release dates to a table. Since there are often more than one table in a document, I define helper functions for the table header and end.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">import</span> os
+<span style="color: #51afef;">import</span> sys
+
+<span style="color: #51afef;">import</span> pandas <span style="color: #51afef;">as</span> pd
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">def</span> <span style="color: #c678dd;">table_header</span><span style="color: #51afef;">(</span>columns<span style="color: #51afef;">)</span>:
+    <span style="color: #83898d;">"""Return table header string with specified columns.</span>
+
+<span style="color: #83898d;">    Parameters</span>
+<span style="color: #83898d;">    ==========</span>
+<span style="color: #83898d;">    columns : list of str</span>
+<span style="color: #83898d;">         List of column names.</span>
+
+<span style="color: #83898d;">    Returns</span>
+<span style="color: #83898d;">    =======</span>
+<span style="color: #83898d;">    str</span>
+<span style="color: #83898d;">         The tabular header with the appropriate number of columns set.</span>
+<span style="color: #83898d;">    """</span>
+    <span style="color: #51afef;">return</span> \
+        f<span style="color: #98be65;">"\\begin{{tabular}}{{</span>{'l' + 'r' * (<span style="color: #c678dd;">len</span>(columns) - 1)}<span style="color: #98be65;">}}\n"</span>\
+        f<span style="color: #98be65;">"\t\\toprule\n"</span>\
+        f<span style="color: #98be65;">"\t</span>{' &amp; '.join(columns)}<span style="color: #98be65;"> \\\\\n"</span>\
+        f<span style="color: #98be65;">"\t\\midrule\n"</span>
+
+
+<span style="color: #51afef;">def</span> <span style="color: #c678dd;">table_end</span><span style="color: #51afef;">()</span>:
+    <span style="color: #83898d;">"""Return table end string."""</span>
+    <span style="color: #51afef;">return</span> \
+        f<span style="color: #98be65;">"\t\\bottomrule\n"</span>\
+        f<span style="color: #98be65;">"\\end{{tabular}}\n"</span>
+
+
+<span style="color: #51afef;">def</span> <span style="color: #c678dd;">matplotlib_versions</span><span style="color: #51afef;">()</span>:
+    <span style="color: #83898d;">"""Write table of matplotlib versions to file."""</span>
+    path_table = os.path.join<span style="color: #51afef;">(</span>os.path.dirname<span style="color: #c678dd;">(</span>__file__<span style="color: #c678dd;">)</span>,
+                              <span style="color: #98be65;">"../tables/matplotlib_versions.tex"</span><span style="color: #51afef;">)</span>
+
+    path_data = os.path.join<span style="color: #51afef;">(</span>os.path.dirname<span style="color: #c678dd;">(</span>__file__<span style="color: #c678dd;">)</span>,
+                              <span style="color: #98be65;">"../data/release_dates.csv"</span><span style="color: #51afef;">)</span>
+    data = pd.read_csv<span style="color: #51afef;">(</span>path_data<span style="color: #51afef;">)</span>
+
+    <span style="color: #51afef;">with</span> <span style="color: #c678dd;">open</span><span style="color: #51afef;">(</span>path_table, <span style="color: #98be65;">"w"</span><span style="color: #51afef;">)</span> <span style="color: #51afef;">as</span> table:
+
+        table.write<span style="color: #51afef;">(</span>table_header<span style="color: #c678dd;">(</span><span style="color: #98be65;">[</span><span style="color: #98be65;">"Version"</span>, <span style="color: #98be65;">"Date"</span><span style="color: #98be65;">]</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+
+        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Ensure that the table data is sorted by date</span>
+        <span style="color: #51afef;">for</span> _, row <span style="color: #51afef;">in</span> data.sort_values<span style="color: #51afef;">(</span><span style="color: #98be65;">"date"</span><span style="color: #51afef;">)</span>.iterrows<span style="color: #51afef;">()</span>:
+
+            version = row.version
+            date = row.date
+
+            table.write<span style="color: #51afef;">(</span>f<span style="color: #98be65;">"</span>{version}<span style="color: #98be65;"> &amp; </span>{date}<span style="color: #98be65;">\\\\\n"</span><span style="color: #51afef;">)</span>
+
+        table.write<span style="color: #51afef;">(</span>table_end<span style="color: #c678dd;">()</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+
+<p>
+The command-line interface follows the same principles as the one in <a href="#orgc60dbf0">create_figures.py</a>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #51afef;">if</span> <span style="color: #c678dd;">__name__</span> == <span style="color: #98be65;">"__main__"</span>:
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">table_name : table_function</span>
+    TABLE_FUNCTIONS = <span style="color: #51afef;">{</span>
+        <span style="color: #98be65;">"matplotlib_versions"</span>: matplotlib_versions,
+    <span style="color: #51afef;">}</span>
+
+    <span style="color: #51afef;">if</span> <span style="color: #c678dd;">len</span><span style="color: #51afef;">(</span>sys.argv<span style="color: #51afef;">)</span> &lt; 2:
+        <span style="color: #51afef;">print</span><span style="color: #51afef;">(</span><span style="color: #98be65;">"Provide a table name to compile it. Choose from:"</span><span style="color: #51afef;">)</span>
+        <span style="color: #51afef;">print</span><span style="color: #51afef;">(</span><span style="color: #c678dd;">list</span><span style="color: #c678dd;">(</span>TABLE_FUNCTIONS.keys<span style="color: #98be65;">()</span><span style="color: #c678dd;">)</span><span style="color: #51afef;">)</span>
+        sys.<span style="color: #a9a1e1;">exit</span><span style="color: #51afef;">()</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Call the figure function</span>
+    <span style="color: #51afef;">if</span> <span style="color: #51afef;">not</span> <span style="color: #98be65;">"--all"</span> <span style="color: #51afef;">in</span> sys.argv:
+        table_name = sys.argv<span style="color: #51afef;">[</span>1<span style="color: #51afef;">]</span>
+        TABLE_FUNCTIONS<span style="color: #51afef;">[</span>table_name<span style="color: #51afef;">]()</span>
+    <span style="color: #51afef;">else</span>:
+        <span style="color: #51afef;">for</span> table, function <span style="color: #51afef;">in</span> TABLE_FUNCTIONS.items<span style="color: #51afef;">()</span>:
+            <span style="color: #51afef;">print</span><span style="color: #51afef;">(</span>f<span style="color: #98be65;">"Compiling </span>{table}<span style="color: #98be65;">.."</span><span style="color: #51afef;">)</span>
+            function<span style="color: #51afef;">()</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org13d8be3" class="outline-3">
+<h3 id="org13d8be3">./</h3>
+<div class="outline-text-3" id="text-org13d8be3">
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org71d62d1">main.tex</a></li>
+<li><a href="#orge853f1b">Makefile</a></li>
+<li><a href="#org865138f">package.sh</a></li>
+<li><a href="#org5dd404e">template.org</a></li>
+<li><a href="#org9781652">template.html</a></li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-org71d62d1" class="outline-4">
+<h4 id="org71d62d1">main.tex</h4>
+<div class="outline-text-4" id="text-org71d62d1">
+<p>
+The root <code>tex</code> file of the template.
+This file imports all other <code>tex</code> files and generates the pdf itself.
+</p>
+
+<p>
+First, we define the destination of the article. When drafting the
+manuscript, this will likely be a preprint server like
+<a href="https://arxiv.org">arXiv</a>. Publisher and preprint server likely use different
+<code>documentclasses</code> and require different <code>LaTeX</code> keywords to be
+defined for e.g. the author affiliation. The customization is done in
+this file.
+</p>
+
+<p>
+The destination is set by using the corresponding <code>make</code> command, see <a href="#orge853f1b">Makefile</a>.
+</p>
+
+<p>
+Disclaimer: My LaTeX skills are not <a href="https://www.thelocal.de/20190710/german-phrase-of-the-day-das-gelbe-vom-ei/">the yellow of the egg</a>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #5B6268;">% </span><span style="color: #5B6268;">Set destination of article: publisher,arxiv.</span>
+<span style="color: #5B6268;">%</span>
+<span style="color: #5B6268;">% </span><span style="color: #5B6268;">Setting at compile time via eg 'pdflatex "\def\destination{arxiv} \input{main.tex}"'</span>
+<span style="color: #5B6268;">% </span><span style="color: #5B6268;">opentakes priority over the definition below</span>
+<span style="color: #51afef;">\ifx\destination\undefined</span>
+  <span style="color: #51afef;">\def</span>\<span style="color: #c678dd;">destination</span>{arxiv}  <span style="color: #5B6268;">% publisher,arxiv</span>
+<span style="color: #51afef;">\fi</span>
+
+<span style="color: #51afef;">\def</span>\<span style="color: #c678dd;">arxiv</span>{arxiv}
+<span style="color: #51afef;">\def</span>\<span style="color: #c678dd;">publisher</span>{publisher}
+</pre>
+</div>
+
+<p>
+The <code>snapshot</code> package creates a list of the dependencies of the
+document version in the <code>main.dep</code> file. This list is later used when
+creating the source <code>tar.gz</code> archives for submission.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\RequirePackage</span>{snapshot}
+</pre>
+</div>
+
+<p>
+Pass options early to <code>xcolor</code> and <code>hyperlink</code> to avoid bugs when other
+packages import them later.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\PassOptionsToPackage</span>{dvipsnames}{xcolor}
+<span style="color: #51afef;">\PassOptionsToPackage</span>{colorlinks=True,allcolors=RoyalBlue}{hyperlink}
+</pre>
+</div>
+
+<p>
+Now, we define the documentclass. This definition largely depends on
+the destination (publishers may provide their own <code>LaTeX</code> packages), so
+we wrap it in an <code>if</code>-block and define the document for each
+destination.
+</p>
+
+<p>
+I am a planetary scientist, so I use the Icarus journal as an example here.
+Note that the <a href="#org482d95f">preprint</a> style file is imported for the arXiv
+submission. The preprint style uses a different command for the
+affiliations as the Icarus (i.e. Elsevier) package, hence we mirror
+the commands to do exactly the same.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\ifx\destination\arxiv</span>
+  <span style="color: #51afef;">\documentclass</span>{<span style="color: #c678dd;">article</span>}
+  <span style="color: #51afef;">\pdfoutput</span>=1  <span style="color: #5B6268;">% ensure pdflatex when submitting to arXiv</span>
+  <span style="color: #51afef;">\usepackage</span>{<span style="color: #c678dd;">aux/preprint</span>}
+  <span style="color: #51afef;">\usepackage</span>{<span style="color: #c678dd;">natbib</span>}
+  <span style="color: #51afef;">\usepackage</span>{<span style="color: #c678dd;">authblk</span>}
+  <span style="color: #5B6268;">% Alias author commands to mirror publisher</span>
+  <span style="color: #51afef;">\let\address\affil</span>
+<span style="color: #51afef;">\else</span>
+  <span style="color: #51afef;">\documentclass</span>[preprint,3p,authoryear,lefttitle]{<span style="color: #c678dd;">elsarticle</span>}
+  <span style="color: #5B6268;">% \documentclass[preprint,5p,authoryear,twocolumn,lefttitle]{elsarticle}  % referee version</span>
+  <span style="color: #51afef;">\journal</span>{Icarus}
+<span style="color: #51afef;">\fi</span>
+</pre>
+</div>
+
+<p>
+Now we import useful packages. <code>hyperref</code> and <code>cleverref</code> should come last.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\usepackage</span>{<span style="color: #c678dd;">amsmath</span>}
+<span style="color: #51afef;">\usepackage</span>{<span style="color: #c678dd;">aux/aas_macros</span>}
+<span style="color: #51afef;">\usepackage</span>{<span style="color: #c678dd;">graphicx</span>}
+<span style="color: #51afef;">\usepackage</span>[title]{<span style="color: #c678dd;">appendix</span>}
+<span style="color: #51afef;">\usepackage</span>{<span style="color: #c678dd;">booktabs</span>}
+<span style="color: #51afef;">\usepackage</span>[skip=4pt]{<span style="color: #c678dd;">caption</span>}
+<span style="color: #51afef;">\usepackage</span>{<span style="color: #c678dd;">here</span>}
+<span style="color: #51afef;">\usepackage</span>[utf8]{<span style="color: #c678dd;">inputenc</span>}
+<span style="color: #51afef;">\usepackage</span>{<span style="color: #c678dd;">lipsum</span>}
+<span style="color: #51afef;">\usepackage</span>{<span style="color: #c678dd;">pgf</span>}
+<span style="color: #51afef;">\usepackage</span>{<span style="color: #c678dd;">tikz</span>}
+<span style="color: #51afef;">\usepackage</span>{<span style="color: #c678dd;">url</span>}
+<span style="color: #51afef;">\usepackage</span>{<span style="color: #c678dd;">xspace</span>}
+<span style="color: #51afef;">\usepackage</span>[colorlinks=True, allcolors=RoyalBlue]{<span style="color: #c678dd;">hyperref</span>}
+<span style="color: #51afef;">\usepackage</span>[nameinlink]{<span style="color: #c678dd;">cleveref</span>}
+</pre>
+</div>
+
+<p>
+Uncomment these two lines before submission to make the referee happy.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #5B6268;">% </span><span style="color: #5B6268;">\usepackage{lineno}</span>
+<span style="color: #5B6268;">% </span><span style="color: #5B6268;">\linenumbers</span>
+</pre>
+</div>
+
+<p>
+Import our <a href="#orgca2885d">macros</a> and <a href="#orgfa00e6b">statistics</a> files.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">aux/macros</span>}
+<span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">aux/stats</span>}
+</pre>
+</div>
+
+<p>
+Finally, we are building the document itself. We start by adding a
+title and information about the authors. Note the <code>if</code>-block which defines additional
+information like the email address of the leading author in case we
+are submitting to the publisher.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\begin</span>{<span style="color: #c678dd;">document</span>}
+
+<span style="color: #5B6268;">% </span><span style="color: #5B6268;">------</span>
+<span style="color: #51afef;">\title</span>{<span style="color: #c678dd;">Re: Research - A publication template</span>}
+
+<span style="color: #5B6268;">% </span><span style="color: #5B6268;">Authors</span>
+<span style="color: #51afef;">\author</span>[1]{Max Mahlke}
+
+<span style="color: #51afef;">\ifx\destination\publisher</span>
+  <span style="color: #51afef;">\corref</span>{cor}
+  <span style="color: #51afef;">\cortext</span>[cor]{Corresponding author}
+  <span style="color: #51afef;">\ead</span>{max.mahlke@oca.eu}  <span style="color: #5B6268;">% email address of *most recent* author</span>
+<span style="color: #51afef;">\fi</span>
+
+<span style="color: #5B6268;">% </span><span style="color: #5B6268;">Affiliations</span>
+<span style="color: #51afef;">\address</span>[1]{Universit{<span style="color: #51afef;">\'</span>e}
+  C{<span style="color: #51afef;">\^</span>o}te d'Azur, Observatoire de la C{<span style="color: #51afef;">\^</span>o}te d'Azur, CNRS, Laboratoire Lagrange, France}
+</pre>
+</div>
+
+<p>
+Next comes the <a href="#org12d24f2">abstract</a>. Again, we wrap it in an <code>if</code>-block to account for different preprint and publisher styles.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\ifx\destination\arxiv</span>
+  <span style="color: #51afef;">\twocolumn</span>[
+    <span style="color: #51afef;">\begin</span>{<span style="color: #c678dd;">@twocolumnfalse</span>}
+      <span style="color: #51afef;">\maketitle</span>
+      <span style="color: #51afef;">\begin</span>{<span style="color: #c678dd;">abstract</span>}
+        <span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">frontback/abstract</span>}
+      <span style="color: #51afef;">\end</span>{<span style="color: #c678dd;">abstract</span>}
+    <span style="color: #51afef;">\end</span>{<span style="color: #c678dd;">@twocolumnfalse</span>}
+  ]
+<span style="color: #51afef;">\else</span>
+  <span style="color: #51afef;">\begin</span>{<span style="color: #c678dd;">frontmatter</span>}
+    <span style="color: #51afef;">\begin</span>{<span style="color: #c678dd;">abstract</span>}
+      <span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">frontback/abstract</span>}
+    <span style="color: #51afef;">\end</span>{<span style="color: #c678dd;">abstract</span>}
+    <span style="color: #51afef;">\begin</span>{<span style="color: #c678dd;">keyword</span>}
+      Asteroids <span style="color: #51afef;">\sep</span> Asteroids, Composition <span style="color: #51afef;">\sep</span> Asteroids, Surfaces <span style="color: #51afef;">\sep</span> Photometry
+    <span style="color: #51afef;">\end</span>{<span style="color: #c678dd;">keyword</span>}
+  <span style="color: #51afef;">\end</span>{<span style="color: #c678dd;">frontmatter</span>}
+<span style="color: #51afef;">\fi</span>
+</pre>
+</div>
+
+<p>
+The heart of the article: the <a href="#orgb7d49c4">sections</a>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #5B6268;">% </span><span style="color: #5B6268;">Introction</span>
+<span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">sections/section1</span>}
+<span style="color: #5B6268;">% </span><span style="color: #5B6268;">Methodology</span>
+<span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">sections/section2</span>}
+<span style="color: #5B6268;">% </span><span style="color: #5B6268;">Results</span>
+<span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">sections/section3</span>}
+<span style="color: #5B6268;">% </span><span style="color: #5B6268;">Discussion</span>
+<span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">sections/section4</span>}
+</pre>
+</div>
+
+<p>
+Can't forget about the acknowledgements.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\section*</span>{<span style="color: #c678dd;">Acknowledgements</span>}<span style="color: #5B6268;">%</span>
+<span style="color: #51afef;">\label</span>{<span style="color: #a9a1e1;">sec:acknowledgements</span>}<span style="color: #5B6268;">%</span>
+<span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">frontback/ack</span>}
+</pre>
+</div>
+
+<p>
+Proper scientific work needs proper <a href="#orgc5bb17f">bibliographies</a> [citation needed].
+Another <code>if</code>-block for the preprint vs publisher formats.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\ifx\destination\arxiv</span>
+  <span style="color: #51afef;">\bibliographystyle</span>{aux/arxiv}
+<span style="color: #51afef;">\else</span>
+  <span style="color: #51afef;">\bibliographystyle</span>{aux/publisher}
+  <span style="color: #51afef;">\biboptions</span>{authoryear}
+<span style="color: #51afef;">\fi</span>
+
+<span style="color: #51afef;">\bibliography</span>{<span style="color: #c678dd;">aux/bib</span>}
+</pre>
+</div>
+
+<p>
+And we end the document with a fresh page and the <a href="#orgd43ca3f">appendix</a>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #ECBE7B;">\clearpage</span>
+
+<span style="color: #5B6268;">% </span><span style="color: #5B6268;">------</span>
+<span style="color: #5B6268;">% </span><span style="color: #5B6268;">Appendix</span>
+<span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">frontback/appendix</span>}
+<span style="color: #51afef;">\end</span>{<span style="color: #c678dd;">document</span>}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge853f1b" class="outline-4">
+<h4 id="orge853f1b">Makefile</h4>
+<div class="outline-text-4" id="text-orge853f1b">
+<p>
+The <code>Makefile</code> offers convenient access to compile any part of the project. The command line call in the project root folder is
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">$ make <span style="color: #51afef;">[</span>command<span style="color: #51afef;">]</span> 
+</pre>
+</div>
+
+<p>
+where <code>command</code> is any of the following:
+</p>
+
+<ul class="org-ul">
+<li><code>doc</code> &gt; Recompile the article including bibliography and references</li>
+<li><code>bib</code> &gt; Recompile the <code>main.bbl</code> file using <code>bibtex</code></li>
+<li><code>latex</code> &gt; Recompile the <code>main.pdf</code> file using <code>pdflatex</code></li>
+<li><code>all</code> &gt; Recompile all figures, tables, statistics, and the article including bibliography and references</li>
+<li><code>clean</code> &gt; Delete auxiliary <code>LaTeX</code> files created during the compilation process</li>
+<li><code>publisher</code> &gt; Create a <code>tar.gz</code> file containing all relevant article files for submission to the publisher</li>
+<li><code>arxiv</code> &gt; Create a <code>tar.gz</code> file containing all relevant article files for submission to <a href="https://arxiv.org">arXiv</a></li>
+</ul>
+
+<p>
+In 90\% of the cases, you want to run <code>make doc</code>}. 9\% are <code>make clean</code> to get
+rid of the temporary files created during the <code>LaTeX</code> compilation process. At the very end, run <code>make arxiv</code> and <code>make publisher</code> to prepare the submission process. These two commands run the <a href="#org865138f">package.sh</a> script.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">doc:
+        @# compile main.tex with bibliography support
+        make latex &amp;&amp; make bib &amp;&amp; make latex
+
+latex:
+        @# run latex on main.tex
+        pdflatex main.tex
+
+bib:
+        @# compile bibliography
+        bibtex main
+
+clean:
+        @# clean latex and bibtex auxiliary files
+        @rm -f main.bbl main.aux main.nav main.out main.dvi main.snm main.toc main.blg
+  @rm -f main.log main.fdb_latexmk main.fls main.dep main.synctex.gz main.vimtex.pdf
+
+publisher:
+        @# Create tar.gz to send to publisher
+        sh package.sh publisher
+
+arxiv:
+        @# Create tar.gz for arxiv submission
+        sh package.sh arxiv
+
+all:
+        @# Re-compile figures, tables, statistics, and the document
+        python scripts/compute_stats.py
+        python scripts/create_figures.py --all
+        python scripts/create_tables.py --all
+        make latex &amp;&amp; make bib &amp;&amp; make latex
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org865138f" class="outline-4">
+<h4 id="org865138f">package.sh</h4>
+<div class="outline-text-4" id="text-org865138f">
+<p>
+This <code>shell</code> script creates a <code>tar.gz</code> source archive for submission to
+the publisher or <a href="https://arxiv.org">arXiv</a>. A neat feature is that only files relevant for
+the current version of the document are included in the archives:
+stale files (such as figures which are no longer included) are
+automatically left out.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #5B6268;">#</span><span style="color: #5B6268;">!/usr/bin/</span><span style="color: #51afef;">env</span><span style="color: #5B6268;"> bash</span>
+
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">Compile if necessary, passing the destination parameter</span>
+<span style="color: #c678dd;">read</span> -p <span style="color: #98be65;">"Compile first? [y/n] "</span> -n 1 REPLY 
+<span style="color: #c678dd;">echo</span> 
+
+<span style="color: #51afef;">if</span> <span style="color: #51afef;">[</span><span style="color: #c678dd;">[</span> <span style="color: #98be65;">"$REPLY"</span> =~ ^<span style="color: #98be65;">[</span>Yy<span style="color: #98be65;">]</span>$ <span style="color: #c678dd;">]</span><span style="color: #51afef;">]</span>; <span style="color: #51afef;">then</span>
+    make clean
+    pdflatex <span style="color: #98be65;">"\def\destination{$1} \input{main.tex}"</span>
+    bibtex main
+    pdflatex <span style="color: #98be65;">"\def\destination{$1} \input{main.tex}"</span>
+<span style="color: #51afef;">fi</span>
+
+make clean
+
+<span style="color: #c678dd;">echo</span>
+<span style="color: #c678dd;">echo</span> <span style="color: #98be65;">"Packing"</span>
+<span style="color: #c678dd;">echo</span> <span style="color: #98be65;">"-------"</span>
+
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">Create archive with files outside of dependency list</span>
+tar cfv $<span style="color: #dcaeea;">1</span>.tar aux/aas_macros.sty
+
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">Parse dependencies list for files to include</span>
+sort -u main.dep | grep <span style="color: #98be65;">"file.*{0000/00/00 v0.0}$"</span> | <span style="color: #51afef;">while </span><span style="color: #c678dd;">read</span> -r line; <span style="color: #51afef;">do</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Get the dependency filename</span>
+    <span style="color: #dcaeea;">filename</span>=$<span style="color: #51afef;">(</span><span style="color: #c678dd;">echo</span> $<span style="color: #dcaeea;">line</span> | cut -d<span style="color: #98be65;">'{'</span> -f3 | cut -d<span style="color: #98be65;">'}'</span> -f1<span style="color: #51afef;">)</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Publisher probably wants the bib file too</span>
+    <span style="color: #51afef;">if</span> <span style="color: #51afef;">[</span><span style="color: #c678dd;">[</span> $<span style="color: #dcaeea;">filename</span> == <span style="color: #98be65;">'aux/publisher.bst'</span> <span style="color: #c678dd;">]</span><span style="color: #51afef;">]</span>; <span style="color: #51afef;">then</span>
+        tar --append -v -f $<span style="color: #dcaeea;">1</span>.tar aux/bib.bib
+    <span style="color: #51afef;">fi</span>
+
+    <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Check if file exists</span>
+    <span style="color: #51afef;">if</span> <span style="color: #51afef;">[</span><span style="color: #c678dd;">[</span> -f $<span style="color: #dcaeea;">filename</span> <span style="color: #c678dd;">]</span><span style="color: #51afef;">]</span>; <span style="color: #51afef;">then</span> 
+        tar --append -v -f $<span style="color: #dcaeea;">1</span>.tar $<span style="color: #dcaeea;">filename</span>
+    <span style="color: #51afef;">else</span>
+        <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Otherwise, add .tex extension and try again</span>
+        <span style="color: #dcaeea;">filename</span>=<span style="color: #98be65;">"${filename}.tex"</span>
+
+        <span style="color: #51afef;">if</span> <span style="color: #51afef;">[</span><span style="color: #c678dd;">[</span> -f $<span style="color: #dcaeea;">filename</span> <span style="color: #c678dd;">]</span><span style="color: #51afef;">]</span>; <span style="color: #51afef;">then</span> 
+            tar --append -v -f $<span style="color: #dcaeea;">1</span>.tar $<span style="color: #dcaeea;">filename</span>
+        <span style="color: #51afef;">fi</span>
+    <span style="color: #51afef;">fi</span>
+
+<span style="color: #51afef;">done</span>
+
+<span style="color: #5B6268;"># </span><span style="color: #5B6268;">arXiv does not want the bib, but it needs the style file</span>
+<span style="color: #51afef;">if</span> <span style="color: #51afef;">[</span><span style="color: #c678dd;">[</span> $<span style="color: #dcaeea;">1</span> == <span style="color: #98be65;">"arxiv"</span> <span style="color: #c678dd;">]</span><span style="color: #51afef;">]</span>; <span style="color: #51afef;">then</span>
+    tar --append -v -f $<span style="color: #dcaeea;">1</span>.tar aux/preprint.sty
+<span style="color: #51afef;">fi</span>
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org5dd404e" class="outline-4">
+<h4 id="org5dd404e">template.org</h4>
+<div class="outline-text-4" id="text-org5dd404e">
+<p>
+The file you are currently reading unless you are reading the <a href="#org9781652">HTML</a> file.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org9781652" class="outline-4">
+<h4 id="org9781652">template.html</h4>
+<div class="outline-text-4" id="text-org9781652">
+<p>
+The file you are currently reading unless you are reading the <a href="#org5dd404e">org</a> file.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgb7d49c4" class="outline-3">
+<h3 id="orgb7d49c4">sections/</h3>
+<div class="outline-text-3" id="text-orgb7d49c4">
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org06e37c8">Introduction</a></li>
+<li><a href="#org76e3937">Methodology</a></li>
+<li><a href="#orgc1b61c4">Results</a></li>
+<li><a href="#orgdfc2a78">Discussion</a></li>
+</ul>
+</div>
+
+<p>
+Where it all comes together.
+</p>
+
+<p>
+The section files contain the actual content of the publication. Here, they are used to showcase the <code>python</code> - <code>LaTeX</code> interaction.
+</p>
+</div>
+
+<div id="outline-container-org06e37c8" class="outline-4">
+<h4 id="org06e37c8">Introduction</h4>
+<div class="outline-text-4" id="text-org06e37c8">
+<p>
+Compiling multi-file documents requires specifying the root <code>tex</code> file
+in all other files. This is achieved here for <a href="https://www.vim.org">vim</a>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #5B6268;">%</span><span style="color: #5B6268;">! TEX root = ../main.tex</span>
+</pre>
+</div>
+
+<p>
+A few lines of introduction. Notice the use of the <code>LaTeX</code> variables defined with the <a href="#orge16d9ed">compute_stats.py</a> script.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\section</span>{<span style="color: #c678dd;">Introduction</span>}<span style="color: #5B6268;">%</span>
+<span style="color: #51afef;">\label</span>{<span style="color: #a9a1e1;">sec:introduction</span>}<span style="color: #5B6268;">%</span>
+
+This document highlights some aspects of the <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">Re: Research</span>}
+template.<span style="color: #51afef;">\footnote</span>{<span style="color: #51afef;">\url</span>{http://github.com/maxmahlke/re-research/}}
+More information can be found in the <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">template.html</span>} file in
+the reference repository. I developed this template while writing a
+publication myself <span style="color: #51afef;">\citep</span>{<span style="color: #a9a1e1;">2009.05129v1</span>}.<span style="color: #51afef;">\footnote</span>{<span style="color: #51afef;">\url</span>{https://arxiv.org/pdf/2009.05129.pdf}}
+
+The sample date are the release versions and date of the <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">matplotlib</span>} package.
+<span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">matplotlib</span>} has had <span style="color: #51afef;">\NVersions</span> version, the earliest (version <span style="color: #51afef;">\VersionEarliest</span>) in
+<span style="color: #51afef;">\VersionEarliestDate</span>, the latest (version <span style="color: #51afef;">\VersionLatest</span>) in
+<span style="color: #51afef;">\VersionLatestDate</span>, refer to <span style="color: #51afef;">\Cref</span>{tab:matplotlib_versions}.
+</pre>
+</div>
+
+<p>
+At the end, we add the root <code>tex</code> file variable for <a href="https://www.gnu.org/software/emacs/">GNU Emacs</a>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #5B6268;">%% </span><span style="color: #5B6268;">Local Variables&#58;</span>
+<span style="color: #5B6268;">%% </span><span style="color: #5B6268;">tex-main-file: "../main.tex"</span>
+<span style="color: #5B6268;">%% </span><span style="color: #5B6268;">End:</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org76e3937" class="outline-4">
+<h4 id="org76e3937">Methodology</h4>
+<div class="outline-text-4" id="text-org76e3937">
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #5B6268;">%</span><span style="color: #5B6268;">! TEX root = ../main.tex</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\section</span>{<span style="color: #c678dd;">Methodology</span>}<span style="color: #5B6268;">%</span>
+<span style="color: #51afef;">\label</span>{<span style="color: #a9a1e1;">sec:methodology</span>}<span style="color: #5B6268;">%</span>
+
+All figures, tables, and numbers in the manuscript which are subject
+to change when the analysis data changes are computed using
+<span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">python</span>} script and saved into auxilliary <span style="color: #51afef;">\LaTeX</span> files. This
+document illustrates the use of these variables (such as in the
+sentence on the versions of <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">matplotlib</span>} above) as well as the
+figure layout options.
+The necessary files are created with comments via the
+<span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">template.org</span>} file in the GitHub repository. More information
+on the usage can be found there.
+
+<span style="color: #51afef;">\Cref</span>{fig:hlines_demo} showcases the default figure
+layout. This is a <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">pgf</span>} figure, meaning that it is written in
+<span style="color: #51afef;">\LaTeX</span> commands and created at document compile time. Notice the
+infinite resolution thanks to vector graphics and that the font in the
+figure matches the one used in the rest of the document. The figure
+spans exactly one column.
+
+In <span style="color: #51afef;">\Cref</span>{fig:matplotlib_release_dates}, we can see the use of a double-column <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">pgf</span>} figure.
+<span style="color: #51afef;">\Cref</span>{fig:solution_space} shows a square figure. See the
+documentation for implementation details.
+
+The supplied <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">Makefile</span>} contains some convenience functions for
+compiling and sharing the document. 
+
+The rest of this document is padded with Lorem Impsum.
+
+<span style="color: #51afef;">\lipsum</span>
+</pre>
+</div>
+
+<p>
+Include the <code>matplotlib</code> versions table created with <a href="#org0a65de4">create_tables.py</a>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\begin</span>{<span style="color: #c678dd;">table</span>}[t]
+<span style="color: #51afef;">\caption</span>{An automatically generated table of <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">matplotlib</span>} versions.}
+<span style="color: #51afef;">\label</span>{<span style="color: #a9a1e1;">tab:matplotlib_versions</span>}
+<span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">tables/matplotlib_versions.tex</span>}
+<span style="color: #51afef;">\end</span>{<span style="color: #c678dd;">table</span>}
+<span style="color: #51afef;">\lipsum</span>[3-5]
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #5B6268;">%% </span><span style="color: #5B6268;">Local Variables&#58;</span>
+<span style="color: #5B6268;">%% </span><span style="color: #5B6268;">tex-main-file: "../main.tex"</span>
+<span style="color: #5B6268;">%% </span><span style="color: #5B6268;">End:</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc1b61c4" class="outline-4">
+<h4 id="orgc1b61c4">Results</h4>
+<div class="outline-text-4" id="text-orgc1b61c4">
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #5B6268;">%</span><span style="color: #5B6268;">! TEX root = ../main.tex</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\section</span>{<span style="color: #c678dd;">Results</span>}<span style="color: #5B6268;">%</span>
+<span style="color: #51afef;">\label</span>{<span style="color: #a9a1e1;">sec:results</span>}<span style="color: #5B6268;">%</span>
+<span style="color: #51afef;">\lipsum</span>[3-5]
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\begin</span>{<span style="color: #c678dd;">figure</span>}[t]
+  <span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">gfx/hlines_demo.pgf</span>}
+  <span style="color: #51afef;">\caption</span>{Demo figure illustrating the default figure layout:
+  colum-wide with a golden aspect ratio.}
+  <span style="color: #51afef;">\label</span>{<span style="color: #a9a1e1;">fig:hlines_demo</span>}
+<span style="color: #51afef;">\end</span>{<span style="color: #c678dd;">figure</span>}
+<span style="color: #51afef;">\lipsum</span>[3-8]
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\begin</span>{<span style="color: #c678dd;">figure*</span>}[t]
+  <span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">gfx/matplotlib_release_dates.pgf</span>}
+  <span style="color: #51afef;">\caption</span>{Example to illustrate the double-column figure layout, as
+  well as the connection between raw data and the manuscript: Editing
+  any line in the matplotlib release data directly translates into
+  this figure after invoking the appropriate <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">make</span>} command.}
+  <span style="color: #51afef;">\label</span>{<span style="color: #a9a1e1;">fig:matplotlib_release_dates</span>}
+<span style="color: #51afef;">\end</span>{<span style="color: #c678dd;">figure*</span>}
+
+<span style="color: #51afef;">\lipsum</span>[1-10]
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\begin</span>{<span style="color: #c678dd;">figure</span>}[t]
+  <span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">gfx/solution_space.pgf</span>}
+  <span style="color: #51afef;">\caption</span>{A figure with an aspect ratio of 1. Note that for
+  <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">matplotlib</span>}, the figure area includes the axes labels and
+  annotations, hence the axes are not necessarily square even with
+  equal aspect ratio.}
+  <span style="color: #51afef;">\label</span>{<span style="color: #a9a1e1;">fig:solution_space</span>}
+<span style="color: #51afef;">\end</span>{<span style="color: #c678dd;">figure</span>}
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #5B6268;">%% </span><span style="color: #5B6268;">Local Variables&#58;</span>
+<span style="color: #5B6268;">%% </span><span style="color: #5B6268;">tex-main-file: "../main.tex"</span>
+<span style="color: #5B6268;">%% </span><span style="color: #5B6268;">End:</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgdfc2a78" class="outline-4">
+<h4 id="orgdfc2a78">Discussion</h4>
+<div class="outline-text-4" id="text-orgdfc2a78">
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #5B6268;">%</span><span style="color: #5B6268;">! TEX root = ../main.tex</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\section</span>{<span style="color: #c678dd;">Discussion</span>}<span style="color: #5B6268;">%</span>
+<span style="color: #51afef;">\label</span>{<span style="color: #a9a1e1;">sec:discussion</span>}<span style="color: #5B6268;">%</span>
+<span style="color: #51afef;">\lipsum</span>[3-4]
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #5B6268;">%% </span><span style="color: #5B6268;">Local Variables&#58;</span>
+<span style="color: #5B6268;">%% </span><span style="color: #5B6268;">tex-main-file: "../main.tex"</span>
+<span style="color: #5B6268;">%% </span><span style="color: #5B6268;">End:</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org1e6b918" class="outline-3">
+<h3 id="org1e6b918">frontback/</h3>
+<div class="outline-text-3" id="text-org1e6b918">
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org12d24f2">abstract.tex</a></li>
+<li><a href="#org1d4dc35">ack.tex</a></li>
+<li><a href="#orgd43ca3f">appendix.tex</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org12d24f2" class="outline-4">
+<h4 id="org12d24f2">abstract.tex</h4>
+<div class="outline-text-4" id="text-org12d24f2">
+<p>
+The text to be inserted as abstract. It is wrapped in the correct
+environment when put into the <a href="#org71d62d1">root file</a>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex">The <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">Re: Research</span>} publication template is meant to simplify
+the writing of scientific manuscripts by creating a link between the
+data analysis, done with the <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">python</span>} programming language, and
+the manuscript creation, built around the <span style="color: #51afef;">\LaTeX\xspace</span> files. The premise is
+that any figure, table, or number given in the manuscript which is
+derived from your data should be placed in the manuscript by your
+code. This removes the necessity of keeping the manuscript up-to-date
+with changes in the input data. An additional bonus is an increase of
+reproducible research: by publishing the scripts which compute the
+manuscript content, anyone (including the original author) can verify
+its derivation.
+The template further provides a complete setup of <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">pgf</span>}
+integration for figure creation with the <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">matplotlib</span>} package,
+which allows to create vectorized figures utilizing the same font as
+the rest of the document.
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1d4dc35" class="outline-4">
+<h4 id="org1d4dc35">ack.tex</h4>
+<div class="outline-text-4" id="text-org1d4dc35">
+<p>
+Again, this file only contains the actual text of the acknowledgements, the formatting is handled in the <a href="#org71d62d1">root file</a>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex">Many ideas I had have been improved and implemented thanks to StackOverflow discussion.
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd43ca3f" class="outline-4">
+<h4 id="orgd43ca3f">appendix.tex</h4>
+<div class="outline-text-4" id="text-orgd43ca3f">
+<p>
+One or more sections for the abstract.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #5B6268;">%%</span><span style="color: #5B6268;">\appendix</span>
+<span style="color: #5B6268;">%%</span><span style="color: #5B6268;">\section{Implemented \textsc{make} commands}%</span>
+<span style="color: #5B6268;">%%</span><span style="color: #5B6268;">\label{app:implemented_make_commands}%</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge2e96c1" class="outline-3">
+<h3 id="orge2e96c1">aux/</h3>
+<div class="outline-text-3" id="text-orge2e96c1">
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgca2885d">macros.tex</a></li>
+<li><a href="#orgfa00e6b">stats.tex</a></li>
+<li><a href="#org482d95f">preprint.sty</a></li>
+<li><a href="#orgc5bb17f">bib.bib</a></li>
+<li><a href="#org8f53bac">arxiv.bst</a></li>
+<li><a href="#org3aefc77">publisher.bst</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgca2885d" class="outline-4">
+<h4 id="orgca2885d">macros.tex</h4>
+<div class="outline-text-4" id="text-orgca2885d">
+<p>
+Here, I define <code>LaTeX</code> macros which I commonly use. They are inserted into the <a href="#org71d62d1">root file</a> before the <code>\begin{document}</code> call.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\newcommand</span>{<span style="color: #c678dd;">\abbr</span>}[2]{<span style="color: #51afef;">\textit</span>{<span style="font-style: italic;">#1</span>} (#2)}  <span style="color: #5B6268;">% Abbreviations</span>
+
+<span style="color: #51afef;">\newcommand</span>{<span style="color: #c678dd;">\wording</span>}[1]{<span style="color: #51afef;">\textcolor</span>{red}{#1}}
+<span style="color: #51afef;">\newcommand</span>{<span style="color: #c678dd;">\source</span>}{<span style="color: #51afef;">\textcolor</span>{orange}{[citation needed]}}
+
+<span style="color: #51afef;">\newcommand</span>{<span style="color: #c678dd;">\ie</span>}{i.e.<span style="color: #51afef;">\,</span>}
+<span style="color: #51afef;">\newcommand</span>{<span style="color: #c678dd;">\eg</span>}{e.g.<span style="color: #51afef;">\,</span>}
+</pre>
+</div>
+
+<p>
+Colormaps (and colorbars) in <code>pgf</code> plots are rasterized by default and saved as auxilliary <code>png</code> file. The pgf figure will contain lines like the following:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\pgftext</span>[left,bottom]{<span style="color: #51afef;">\includegraphics</span>[interpolate=true,width=0.7381in,height=0.7381in]{<span style="color: #c678dd;">figure-img0.png</span>}}<span style="color: #5B6268;">%</span>
+</pre>
+</div>
+
+<p>
+The rasterized png colormaps are created in the same directory as the
+pgf file and added automatically. However, when using a specific
+directory for your figures in your publictaion directory (such as the
+<code>gfx/</code> directory in this template), the <code>\includegraphics</code> command in the
+pgf figure will fail.  Here is a workaround function I found on
+StackOverflow (have not been able to track down the source):
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\newcommand</span><span style="color: #c678dd;">\inputpgf</span>[2]{{
+<span style="color: #51afef;">\let\includegraphicsWithoutPath\includegraphics</span>
+<span style="color: #51afef;">\renewcommand</span>{<span style="color: #c678dd;">\includegraphics</span>}[2][]{<span style="color: #51afef;">\includegraphicsWithoutPath</span>[##1]{#1/##2}}
+<span style="color: #51afef;">\input</span>{<span style="color: #c678dd;">#1/#2</span>}
+}}
+</pre>
+</div>
+
+<p>
+The TeX commands to input the pgf figure now look like this:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\begin</span>{<span style="color: #c678dd;">figure</span>}[t]
+  <span style="color: #51afef;">\centering</span>
+  <span style="color: #51afef;">\inputpgf</span>{gfx}{great_figure.pgf}
+  <span style="color: #51afef;">\caption</span>{Look at my great figure with a nice colormap.}
+  <span style="color: #51afef;">\label</span>{<span style="color: #a9a1e1;">fig:great_figure</span>}
+<span style="color: #51afef;">\end</span>{<span style="color: #c678dd;">figure</span>}
+</pre>
+</div>
+
+<p>
+The line below fixes an issue when using <code>matplotlib</code> generated <code>pgf</code> figures and
+the <code>inputenc</code> <code>LaTeX</code> package.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-tex"><span style="color: #51afef;">\DeclareUnicodeCharacter</span>{2212}{-}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgfa00e6b" class="outline-4">
+<h4 id="orgfa00e6b">stats.tex</h4>
+<div class="outline-text-4" id="text-orgfa00e6b">
+<p>
+The numbers and statistics <code>LaTeX</code> variables computed with the <a href="#orge16d9ed">compute_stats.py</a> script.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org482d95f" class="outline-4">
+<h4 id="org482d95f">preprint.sty</h4>
+<div class="outline-text-4" id="text-org482d95f">
+<p>
+A preprint style file using in the compilation process when the destination is <a href="https://arxiv.org">arXiv</a>. I have it from <a href="https://github.com/Swanson-Hysell/preprint-template.tex">this GitHub repository</a>, with only minor edits from my side.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgc5bb17f" class="outline-4">
+<h4 id="orgc5bb17f">bib.bib</h4>
+<div class="outline-text-4" id="text-orgc5bb17f">
+<p>
+The bibliography file of the article. Replace with your own.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8f53bac" class="outline-4">
+<h4 id="org8f53bac">arxiv.bst</h4>
+<div class="outline-text-4" id="text-org8f53bac">
+<p>
+A bibliography style file based on APJ. I have edited it to make the
+page and journal numbers in the bibliography clickable links to the
+DOI.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org3aefc77" class="outline-4">
+<h4 id="org3aefc77">publisher.bst</h4>
+<div class="outline-text-4" id="text-org3aefc77">
+<p>
+The bibliography style file of the publisher. Replace as you see fit.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org3b99f94" class="outline-3">
+<h3 id="org3b99f94">gfx/</h3>
+<div class="outline-text-3" id="text-org3b99f94">
+<p>
+Output directory for the created figures.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org9eecf00" class="outline-3">
+<h3 id="org9eecf00">tables/</h3>
+<div class="outline-text-3" id="text-org9eecf00">
+<p>
+Output directory for the created tables.
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org50baad5" class="outline-2">
+<h2 id="org50baad5">Troubleshooting</h2>
+<div class="outline-text-2" id="text-org50baad5">
+</div>
+<div id="outline-container-org902dc0e" class="outline-3">
+<h3 id="org902dc0e"><code>pgf</code> and rasterized elements - file not found error</h3>
+<div class="outline-text-3" id="text-org902dc0e">
+<p>
+See the <code>\inputpgf</code> command in the <a href="#orgca2885d">macros.tex</a>.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org42c6932" class="outline-3">
+<h3 id="org42c6932">Busy figures - TeX capacity exceeded</h3>
+<div class="outline-text-3" id="text-org42c6932">
+<p>
+Busy figures (eg. a scatter plot with several thousand points) can exceed the TeX capacity during compilation and lead
+to large rendering times of the pdf. I find it best to rasterize them.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #dcaeea;">scatter_plot</span> = ax.scatter<span style="color: #51afef;">(</span>..., rasterized=<span style="color: #a9a1e1;">True</span><span style="color: #51afef;">)</span>
+</pre>
+</div>
+
+<p>
+Note that only the scatter-plot symbols are rasterized, the rest of the graphic are still crispy vectors.
+</p>
+</div>
+</div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Max Mahlke</p>
-<p class="date">Created: 2021-04-09 Fri 16:52</p>
+<p class="date">Created: 2021-04-12 Mon 12:48</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

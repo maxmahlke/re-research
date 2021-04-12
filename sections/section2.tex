@@ -1,0 +1,41 @@
+%! TEX root = ../main.tex
+
+\section{Methodology}%
+\label{sec:methodology}%
+
+All figures, tables, and numbers in the manuscript which are subject
+to change when the analysis data changes are computed using
+\textsc{python} script and saved into auxilliary \LaTeX files. This document
+illustrates the use of these variables (such as in the sentence on the versions of \textsc{matplotlib} above) as well as the figure layout options.
+The necessary files are created with comments via the
+\textsc{template.org} file in the GitHub repository. More information
+on the usage can be found there.
+
+\Cref{fig:hlines_demo} showcases the default figure
+layout. This is a \textsc{pgf} figure, meaning that it is written in
+\LaTeX commands and created at document compile time. Notice the
+infinite resolution thanks to vector graphics and that the font in the
+figure matches the one used in the rest of the document. The figure
+spans exactly one column.
+
+In \Cref{fig:matplotlib_release_dates}, we can see the use of a double-column \textsc{pgf} figure.
+\Cref{fig:solution_space} shows a square figure. See the
+documentation for implementation details.
+
+The supplied \textsc{Makefile} contains some convenience functions for
+compiling and sharing the document. 
+
+The rest of this document is padded with Lorem Impsum.
+
+\lipsum
+
+\begin{table}[t]
+\caption{An automatically generated table of \textsc{matplotlib} versions.}
+\label{tab:matplotlib_versions}
+\input{tables/matplotlib_versions.tex}
+\end{table}
+\lipsum[3-5]
+
+%% Local Variables:
+%% tex-main-file: "../main.tex"
+%% End:
