@@ -1242,7 +1242,7 @@ Here, I define ~LaTeX~ macros which I commonly use. They are inserted into the [
 Colormaps (and colorbars) in ~pgf~ plots are rasterized by default and saved as auxilliary ~png~ file. The pgf figure will contain lines like the following:
 
 #+begin_src tex :tangle aux/macros.tex
-\pgftext[left,bottom]{\includegraphics[interpolate=true,width=0.738571in,height=0.738571in]{massalia_phase_fit-img0.png}}%
+\pgftext[left,bottom]{\includegraphics[interpolate=true,width=0.7381in,height=0.7381in]{figure-img0.png}}%
 #+end_src
 
 The rasterized png colormaps are created in the same directory as the
