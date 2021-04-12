@@ -590,69 +590,90 @@ After running this file, the [[stats.tex]] file contains these lines:
 *** create_tables.py
 
 This follows the same prinicple as [[compute_stats.py]]: we write the ~LaTeX~ code using ~python~.
-Here, I write the matplotlib versions and release dates to a table.
+Here, I write the matplotlib versions and release dates to a table. Since there are often more than one table in a document, I define helper functions for the table header and end.
+
+#+begin_src python :tangle scripts/create_tables.py
+import os
+import sys
+
+import pandas as pd
+#+end_src
 
 #+begin_src python :tangle scripts/create_tables.py
 def table_header(columns):
-    """Returns table header string with specified columns."""
+    """Return table header string with specified columns.
+
+    Parameters
+    ==========
+    columns : list of str
+         List of column names.
+
+    Returns
+    =======
+    str
+         The tabular header with the appropriate number of columns set.
+    """
     return \
-        f'\\begin{{tabular}}{{{"l" + "r" * (len(columns) - 1)}}}\n'\
-        f'\t\\toprule\n'\
-        f'\t{" & ".join(columns)} \\\\\n'\
-        f'\t\\midrule\n'
+        r"\\begin{{tabular}}{{{'l' + 'r' * (len(columns) - 1)}}}\n"\
+        r"\t\\toprule\n"\
+        r"\t{' & '.join(columns)} \\\\\n"\
+        r"\t\\midrule\n"
 
 
 def table_end():
-    """Returns table end string."""
+    """Return table end string."""
     return \
-        f'\t\\bottomrule\n'\
-        f'\\end{{tabular}}\n'  # noqa
+        f"\t\\bottomrule\n"\
+        f"\\end{{tabular}}\n"
 
 
-def sample_stats():
-    """Creates classy sample statistics table."""
+def matplotlib_versions():
+    """Write table of matplotlib versions to file."""
     path_table = os.path.join(os.path.dirname(__file__),
-                              '../tables/sample_stats.tex')
+                              "../tables/matplotlib_versions.tex")
 
-    N = tools.sample_sizes()
-    IC = tools.information_content()
+    path_data = os.path.join(os.path.dirname(__file__),
+                              "../data/release_dates.csv")
+    data = pd.read_csv(path_data)
 
-    with open(path_table, 'w') as table:
-        table.write(table_header(['Feature', 'N', 'IC']))
+    with open(path_table, "w") as table:
 
-        for feat in ['Spectra', 'Photometry']:
-            table.write(f'\t\\textit{{{feat}}} & & \\\\')
+        table.write(table_header(["Version", "Date"]))
 
-            for wave in ['VIS', 'NIR', 'VISNIR']:
-                table.write(f'{wave} & {N[feat][wave]:,} &'
-                            f'{IC[feat][wave]:.1f}\\\\')
-            else:
-                table.write(r'\rule{0pt}{1ex}\\')
+        # Ensure that the table data is sorted by date
+        for _, row in data.sort_values("date").iterrows():
 
-        for feat in ['Albedo', 'Phase']:
-            table.write(f'\t\\textit{{{feat}}} & {N[feat]:,}'
-                        f'& {IC[feat]:.2f}\\\\')
+            version = row.version
+            date = row.date
 
-            if feat == 'Albedo':
-                table.write(r'\rule{0pt}{1ex}\\')
+            table.write(f"{version} & {date}\\\\\n")
 
         table.write(table_end())
 #+end_src
 
-The CLI follows [[create_figures.py]].
+The command-line interface follows the same principles as the one in [[create_figures.py]].
 
 #+begin_src python :tangle scripts/create_tables.py
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    table_name = sys.argv[-1]
+    # table_name : table_function
+    TABLE_FUNCTIONS = {
+        "matplotlib_versions": matplotlib_versions,
+    }
 
     if len(sys.argv) < 2:
-        print('Expecting label of table as argument. Exiting.')
+        print("Provide a table name to compile it. Choose from:")
+        print(list(TABLE_FUNCTIONS.keys()))
         sys.exit()
 
-    if table_name == 'sample_stats':
-        sample_stats()
-
+    # Call the figure function
+    if not "--all" in sys.argv:
+        table_name = sys.argv[1]
+        TABLE_FUNCTIONS[table_name]()
+    else:
+        for table, function in TABLE_FUNCTIONS.items():
+            print(f"Compiling {table}..")
+            function()
 #+end_src
 
 
@@ -1118,7 +1139,9 @@ Many ideas I had have been improved and implemented in StackOverflow discussion.
 #+end_src
 
 *** stats.tex
+
 *** preprint.sty
+
 *** bib.bib
 
 ** gfx/
