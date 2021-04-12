@@ -491,7 +491,7 @@ apparant from the code that if the [[data/]] changed (e.g. a new version
 comes out while writing the article), so would the variables defined
 here and printed in the manuscript.
 
-#+begin_src python :tangle compute_stats.py
+#+begin_src python :tangle scripts/compute_stats.py
 import os
 import sys
 
@@ -509,19 +509,19 @@ for the minimum working example here.
 The ~\xspace~ command ensures that ~LaTeX~ adds a space after inserting
 the variable value into the text.
 
-#+begin_src python :tangle compute_stats.py
-def write_variables_to_file(name, value):
-     """Write the variables to the aux/stats.tex file.
+#+begin_src python :tangle scripts/compute_stats.py
+def write_variables_to_file(stats):
+    """Write the variables to the aux/stats.tex file.
 
-     Parameters
-     ==========
-     stats : dict
-         Dictionary containing variable names as keys and their value and filetype as values.
-         The LaTeX variable name cannot contain underscores.
+    Parameters
+    ==========
+    stats : dict
+        Dictionary containing variable names as keys and their value and filetype as values.
+        The LaTeX variable name cannot contain underscores.
     """
-    PATH_STATS = os.path.join(os.path.dirname(__file__), '../aux/stats.tex')
+    PATH_STATS = os.path.join(os.path.dirname(__file__), "../aux/stats.tex")
 
-    with open(PATH_STATS, 'w') as file_:
+    with open(PATH_STATS, "w") as file_:
 
         for name, value in stats.items():
 
@@ -534,11 +534,11 @@ def write_variables_to_file(name, value):
             value, type_ = value
 
             if type_ is int:
-                f.write(f'\\def\\{name}{{{value:,}\\xspace}}\n')
+                file_.write(f'\\def\\{name}{{{value:,}\\xspace}}\n')
             elif type_ is float:
-                f.write(f'\\def\\{name}{{{value:.2f}\\xspace}}\n')
+                file_.write(f'\\def\\{name}{{{value:.2f}\\xspace}}\n')
             elif type_ is str:
-                f.write(f'\\def\\{name}{{{value}\\xspace}}\n')
+                file_.write(f'\\def\\{name}{{{value}\\xspace}}\n')
 
 #+end_src
 
@@ -549,7 +549,7 @@ if __name__ == "__main__":
 
     # Directories and data
     PATH_DATA = os.path.join(os.path.dirname(__file__), "../data/")
-    data = pd.read_csv("data/release_dates.csv")
+    data = pd.read_csv(os.path.join(PATH_DATA, "release_dates.csv"))
 
     # Dictionary storing the variable : (value, type) pairs
     STATS = {}
@@ -560,12 +560,12 @@ if __name__ == "__main__":
     # Get the earliest and latest version
     STATS["VersionEarliest"] = (data.version.min(), str) 
     STATS["VersionLatest"] = (data.version.max(), str) 
-    STATS["VersionEarliestDate"] = data.loc[
+    STATS["VersionEarliestDate"] = (data.loc[
          data.version == data.version.min(), "date"
-         ].values[0]
-    STATS["VersionLatestDate"] = data.loc[
+         ].values[0], str)
+    STATS["VersionLatestDate"] = (data.loc[
          data.version == data.version.min(), "date"
-         ].values[0]
+         ].values[0], str)
 
     # And write to file
     write_variables_to_file(STATS)
@@ -577,9 +577,20 @@ value right next to the variable which we then place into the
 manuscript. Later, this makes it easy for anyone to tell how a value was derived
 in the analysis.
 
+After running this file, the [[stats.tex]] file contains these lines:
+
+#+begin_src 
+\def\NVersions{23\xspace}
+\def\VersionEarliest{v1.4.0\xspace}
+\def\VersionLatest{v3.0.3\xspace}
+\def\VersionEarliestDate{2014-08-26\xspace}
+\def\VersionLatestDate{2014-08-26\xspace}
+#+end_src
+
 *** create_tables.py
 
-This follows the same prinicple as [[compute_stats.py]].
+This follows the same prinicple as [[compute_stats.py]]: we write the ~LaTeX~ code using ~python~.
+Here, I write the matplotlib versions and release dates to a table.
 
 #+begin_src python :tangle scripts/create_tables.py
 def table_header(columns):
