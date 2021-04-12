@@ -614,10 +614,10 @@ def table_header(columns):
          The tabular header with the appropriate number of columns set.
     """
     return \
-        r"\\begin{{tabular}}{{{'l' + 'r' * (len(columns) - 1)}}}\n"\
-        r"\t\\toprule\n"\
-        r"\t{' & '.join(columns)} \\\\\n"\
-        r"\t\\midrule\n"
+        f"\\begin{{tabular}}{{{'l' + 'r' * (len(columns) - 1)}}}\n"\
+        f"\t\\toprule\n"\
+        f"\t{' & '.join(columns)} \\\\\n"\
+        f"\t\\midrule\n"
 
 
 def table_end():
@@ -878,7 +878,6 @@ And we end the document with a fresh page and the [[appendix.tex][appendix]].
 
 % ------
 % Appendix
-\appendix
 \input{frontback/appendix}
 \end{document}
 #+end_src
@@ -886,6 +885,17 @@ And we end the document with a fresh page and the [[appendix.tex][appendix]].
 *** Makefile
 
 TODO Exclude data/ directory from source targz
+TODO make complete
+
+make bib
+make latex
+make all
+make clean
+make arxiv
+make publisher
+
+In 90\% of the cases, you want to run \textsc{make all}. 9\% are \textsc{make clean} to get
+rid of the temporary files created during the \LaTeX compilation process.
 
 *** template.org
 
@@ -911,23 +921,22 @@ in all other files. This is achieved here for [[https://www.vim.org][vim]].
 %! TEX root = ../main.tex
 #+end_src
 
-Some contents to fill the introduction.
+A few lines of introduction. Notice the use of the ~LaTeX~ variables defined with the [[compute_stats.py]] script.
 
 #+begin_src tex :tangle sections/section1.tex
 \section{Introduction}%
 \label{sec:introduction}%
 
-The problem
-
 This document highlights some aspects of the \textsc{Re: Research}
 template.\footnote{\url{http://github.com/maxmahlke/re-research/}}
 More information can be found in the \textsc{template.html} file in
 the reference repository. I developed this template while writing a
-publication myself \citep{2009.05129v1}.\footnote{Check out the arXiv
-version at \url{https://arxiv.org/pdf/2009.05129.pdf}}
+publication myself \citep{2009.05129v1}.\footnote{\url{https://arxiv.org/pdf/2009.05129.pdf}}
 
+The sample date are the release versions and date of the \textsc{matplotlib} package.
+\textsc{matplotlib} has had \NVersions version, the earliest (version \VersionEarliest) in
+\VersionEarliestDate, the latest (version \VersionLatest) in \VersionLatestDate, refer to \Cref{tab:matplotlib_versions}.
 #+end_src
-
 
 At the end, we add the root ~tex~ file variable for [[https://www.gnu.org/software/emacs/][GNU Emacs]].
 
@@ -949,21 +958,41 @@ At the end, we add the root ~tex~ file variable for [[https://www.gnu.org/softwa
 
 All figures, tables, and numbers in the manuscript which are subject
 to change when the analysis data changes are computed using
-\textsc{python} script and saved into auxilliary \LaTeX files. The
-\textsc{python} scripts are located in the \textsc{scripts} directory,
-with one script each dedicated to creating figures, tables, and
-numbers respectively. An additional script contains defaults for the
-\textsc{matplotlib} package to get a uniform figure appearance
-throughout the manuscript while reducing the amount of necessary code
-lines.
-
+\textsc{python} script and saved into auxilliary \LaTeX files. This document
+illustrates the use of these variables (such as in the sentence on the versions of \textsc{matplotlib} above) as well as the figure layout options.
 The necessary files are created with comments via the
 \textsc{template.org} file in the GitHub repository. More information
 on the usage can be found there.
 
+\Cref{fig:hlines_demo} showcases the default figure
+layout. This is a \textsc{pgf} figure, meaning that it is written in
+\LaTeX commands and created at document compile time. Notice the
+infinite resolution thanks to vector graphics and that the font in the
+figure matches the one used in the rest of the document. The figure
+spans exactly one column.
+
+In \Cref{fig:matplotlib_release_dates}, we can see the use of a double-column \textsc{pgf} figure.
+\Cref{fig:solution_space} shows a square figure. See the
+documentation for implementation details.
+
+The supplied \textsc{Makefile} contains some convenience functions for
+compiling and sharing the document. 
+
+The rest of this document is padded with Lorem Impsum.
+
 \lipsum
 #+end_src
 
+Include the ~matplotlib~ versions table created with [[create_tables.py]].
+
+#+begin_src tex :tangle sections/section2.tex
+\begin{table}[t]
+\caption{An automatically generated table of \textsc{matplotlib} versions.}
+\label{tab:matplotlib_versions}
+\input{tables/matplotlib_versions.tex}
+\end{table}
+\lipsum[3-5]
+#+end_src
 
 #+begin_src tex :tangle sections/section2.tex 
 %% Local Variables:
@@ -980,53 +1009,34 @@ on the usage can be found there.
 #+begin_src tex :tangle sections/section3.tex
 \section{Results}%
 \label{sec:results}%
-\Cref{fig:scatterplot_absolute_magnitude} showcases the default figure
-layout. This is a \textsc{pgf} figure, meaning that it is written in
-\LaTeX commands and created at document compile time. Notice the
-infinite resolution thanks to vector graphics and that the font in the
-figure matches the one used in the rest of the document. The figure
-spans exactly one column.
-
-
-\textsc{matplotlib} has had \NVersions version, the earliest (version \VersionEarliest) in
-\VersionEarliestDate, the latest (version \VersionLatest) in \VersionLatestDate.
+\lipsum[3-5]
 #+end_src
 
 #+begin_src tex :tangle sections/section3.tex
 \begin{figure}[t]
   \input{gfx/hlines_demo.pgf}
-  \caption{Absolute magnitude in default figure layout.}
+  \caption{Demo figure illustrating the default figure layout: colum-wide with a golden aspect ratio.}
   \label{fig:hlines_demo}
 \end{figure}
 \lipsum[3-8]
 #+end_src
 
-Now we add a two-column figure.
-
 #+begin_src tex :tangle sections/section3.tex
-In \Cref{fig:matplotlib_release_dates}, we can see the use of a double-column \textsc{pgf} figure.
-
 \begin{figure*}[t]
   \input{gfx/matplotlib_release_dates.pgf}
-  \caption{Absolute magnitude spanning the full textwidth.}
+  \caption{Example to illustrate the double-column figure layout, as well as the connection between raw data and the manuscript: Editing any line in the matplotlib release data directly translates into this figure after invoking the appropriate \textsc{make} command.}
   \label{fig:matplotlib_release_dates}
 \end{figure*}
 
 \lipsum[1-10]
-
-\Cref{fig:solution_space} shows a square figure. See the
-documentation for implementation details.
 #+end_src
-
-Now we add a square figure.
 
 #+begin_src tex :tangle sections/section3.tex
 \begin{figure}[t]
   \input{gfx/solution_space.pgf}
-  \caption{Absolute magnitude in a square figure.}
+  \caption{A figure with an aspect ratio of 1. Note that for \textsc{matplotlib}, the figure area includes the axes labels and annotations, hence the axes are not necessarily square even with equal aspect ratio.}
   \label{fig:solution_space}
 \end{figure}
-\lipsum
 #+end_src
 
 #+begin_src tex :tangle sections/section3.tex
@@ -1044,11 +1054,7 @@ Now we add a square figure.
 #+begin_src tex :tangle sections/section4.tex
 \section{Discussion}%
 \label{sec:discussion}%
-
-Discussion of results requires sharing, which you can do using the supplied \textsc{Makefile}.
-See the commands listed in \Cref{app:implemented_make_commands}.
-
-and a Table goes here.
+\lipsum[3-4]
 #+end_src
 
 #+begin_src tex :tangle sections/section4.tex
@@ -1086,21 +1092,14 @@ the rest of the document.
 
 *** appendix.tex
 
-One or more sections for the abstract. As for the [[abstract.tex][abstract]], the actual appendix-formatting takes place in the [[main.tex][root file]].
+One or more sections for the abstract.
 
 #+begin_src tex :tangle frontback/appendix.tex
-\section{Implemented \textsc{make} commands}%
-\label{app:implemented_make_commands}%
+\appendix
 
-make bib
-make latex
-make all
-make clean
-make arxiv
-make publisher
+%% \section{Implemented \textsc{make} commands}%
+%% \label{app:implemented_make_commands}%
 
-In 90\% of the cases, you want to run \textsc{make all}. 9\% are \textsc{make clean} to get
-rid of the temporary files created during the \LaTeX compilation process.
 #+end_src
 
 *** ack.tex
@@ -1108,7 +1107,7 @@ rid of the temporary files created during the \LaTeX compilation process.
 Again, this file only contains the actual text of the acknowledgements, the formatting is handled in the [[main.tex][root file]].
 
 #+begin_src tex :tangle frontback/ack.tex
-Many ideas I had have been improved and implemented in StackOverflow discussion.
+Many ideas I had have been improved and implemented thanks to StackOverflow discussion.
 #+end_src
 
 ** aux/
