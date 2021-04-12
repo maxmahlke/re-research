@@ -884,18 +884,122 @@ And we end the document with a fresh page and the [[appendix.tex][appendix]].
 
 *** Makefile
 
-TODO Exclude data/ directory from source targz
-TODO make complete
+The ~Makefile~ offers convenient access to compile any part of the project. The command line call in the project root folder is
 
-make bib
-make latex
-make all
+#+begin_src shell
+$ make [command] 
+#+end_src
+
+where ~command~ is any of the following:
+
+- ~doc~ > Recompile the article including bibliography and references
+- ~bib~ > Recompile the ~main.bbl~ file using ~bibtex~
+- ~latex~ > Recompile the ~main.pdf~ file using ~pdflatex~
+- ~all~ > Recompile all figures, tables, statistics, and the article including bibliography and references
+- ~clean~ > Delete auxiliary ~LaTeX~ files created during the compilation process
+- ~publisher~ > Create a ~tar.gz~ file containing all relevant article files for submission to the publisher
+- ~arxiv~ > Create a ~tar.gz~ file containing all relevant article files for submission to [[https://arxiv.org][arXiv]] 
+
+In 90\% of the cases, you want to run ~make doc~}. 9\% are ~make clean~ to get
+rid of the temporary files created during the ~LaTeX~ compilation process. At the very end, run ~make arxiv~ and ~make publisher~ to prepare the submission process. These two commands run the [[package.sh]] script.
+
+#+begin_src shell :tangle Makefile
+doc:
+	@# compile main.tex with bibliography support
+	make latex && make bib && make latex
+
+latex:
+	@# run latex on main.tex
+	pdflatex main.tex
+
+bib:
+	@# compile bibliography
+	bibtex main
+
+clean:
+	@# clean latex and bibtex auxiliary files
+	@rm -f main.bbl main.aux main.nav main.out main.dvi main.snm main.toc main.blg
+  @rm -f main.log main.fdb_latexmk main.fls main.dep main.synctex.gz main.vimtex.pdf
+
+publisher:
+	@# Create tar.gz to send to publisher
+	sh package.sh publisher
+
+arxiv:
+	@# Create tar.gz for arxiv submission
+	sh package.sh arxiv
+
+all:
+	@# Re-compile figures, tables, statistics, and the document
+	python scripts/compute_stats.py
+	python scripts/create_figures.py --all
+	python scripts/create_tables.py --all
+	make latex && make bib && make latex
+#+end_src
+
+
+*** package.sh
+
+This ~shell~ script creates a ~tar.gz~ source archive for submission to
+the publisher or [[https://arxiv.org][arXiv]]. A neat feature is that only files relevant for
+the current version of the document are included in the archives:
+stale files (such as figures which are no longer included) are
+automatically left out.
+
+#+begin_src shell :tangle package.sh
+#!/usr/bin/env bash
+
+# Compile if necessary, passing the destination parameter
+read -p "Compile first? [y/n] " -n 1 REPLY 
+echo 
+
+if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+    make clean
+    pdflatex "\def\destination{$1} \input{main.tex}"
+    bibtex main
+    pdflatex "\def\destination{$1} \input{main.tex}"
+fi
+
 make clean
-make arxiv
-make publisher
 
-In 90\% of the cases, you want to run \textsc{make all}. 9\% are \textsc{make clean} to get
-rid of the temporary files created during the \LaTeX compilation process.
+echo
+echo "Packing"
+echo "-------"
+
+# Create archive with files outside of dependency list
+tar cfv $1.tar aux/aas_macros.sty
+
+# Parse dependencies list for files to include
+sort -u main.dep | grep "file.*{0000/00/00 v0.0}$" | while read -r line; do
+
+    # Get the dependency filename
+    filename=$(echo $line | cut -d'{' -f3 | cut -d'}' -f1)
+
+    # Publisher probably wants the bib file too
+    if [[ $filename == 'aux/publisher.bst' ]]; then
+        tar --append -v -f $1.tar aux/bib.bib
+    fi
+
+    # Check if file exists
+    if [[ -f $filename ]]; then 
+        tar --append -v -f $1.tar $filename
+    else
+        # Otherwise, add .tex extension and try again
+        filename="${filename}.tex"
+
+        if [[ -f $filename ]]; then 
+            tar --append -v -f $1.tar $filename
+        fi
+    fi
+
+done
+
+# arXiv does not want the bib, but it needs the style file
+if [[ $1 == "arxiv" ]]; then
+    tar --append -v -f $1.tar aux/preprint.sty
+fi
+#+end_src
+
 
 *** template.org
 
@@ -935,7 +1039,8 @@ publication myself \citep{2009.05129v1}.\footnote{\url{https://arxiv.org/pdf/200
 
 The sample date are the release versions and date of the \textsc{matplotlib} package.
 \textsc{matplotlib} has had \NVersions version, the earliest (version \VersionEarliest) in
-\VersionEarliestDate, the latest (version \VersionLatest) in \VersionLatestDate, refer to \Cref{tab:matplotlib_versions}.
+\VersionEarliestDate, the latest (version \VersionLatest) in
+\VersionLatestDate, refer to \Cref{tab:matplotlib_versions}.
 #+end_src
 
 At the end, we add the root ~tex~ file variable for [[https://www.gnu.org/software/emacs/][GNU Emacs]].
@@ -958,8 +1063,10 @@ At the end, we add the root ~tex~ file variable for [[https://www.gnu.org/softwa
 
 All figures, tables, and numbers in the manuscript which are subject
 to change when the analysis data changes are computed using
-\textsc{python} script and saved into auxilliary \LaTeX files. This document
-illustrates the use of these variables (such as in the sentence on the versions of \textsc{matplotlib} above) as well as the figure layout options.
+\textsc{python} script and saved into auxilliary \LaTeX files. This
+document illustrates the use of these variables (such as in the
+sentence on the versions of \textsc{matplotlib} above) as well as the
+figure layout options.
 The necessary files are created with comments via the
 \textsc{template.org} file in the GitHub repository. More information
 on the usage can be found there.
@@ -1015,7 +1122,8 @@ Include the ~matplotlib~ versions table created with [[create_tables.py]].
 #+begin_src tex :tangle sections/section3.tex
 \begin{figure}[t]
   \input{gfx/hlines_demo.pgf}
-  \caption{Demo figure illustrating the default figure layout: colum-wide with a golden aspect ratio.}
+  \caption{Demo figure illustrating the default figure layout:
+  colum-wide with a golden aspect ratio.}
   \label{fig:hlines_demo}
 \end{figure}
 \lipsum[3-8]
@@ -1024,7 +1132,10 @@ Include the ~matplotlib~ versions table created with [[create_tables.py]].
 #+begin_src tex :tangle sections/section3.tex
 \begin{figure*}[t]
   \input{gfx/matplotlib_release_dates.pgf}
-  \caption{Example to illustrate the double-column figure layout, as well as the connection between raw data and the manuscript: Editing any line in the matplotlib release data directly translates into this figure after invoking the appropriate \textsc{make} command.}
+  \caption{Example to illustrate the double-column figure layout, as
+  well as the connection between raw data and the manuscript: Editing
+  any line in the matplotlib release data directly translates into
+  this figure after invoking the appropriate \textsc{make} command.}
   \label{fig:matplotlib_release_dates}
 \end{figure*}
 
@@ -1034,7 +1145,10 @@ Include the ~matplotlib~ versions table created with [[create_tables.py]].
 #+begin_src tex :tangle sections/section3.tex
 \begin{figure}[t]
   \input{gfx/solution_space.pgf}
-  \caption{A figure with an aspect ratio of 1. Note that for \textsc{matplotlib}, the figure area includes the axes labels and annotations, hence the axes are not necessarily square even with equal aspect ratio.}
+  \caption{A figure with an aspect ratio of 1. Note that for
+  \textsc{matplotlib}, the figure area includes the axes labels and
+  annotations, hence the axes are not necessarily square even with
+  equal aspect ratio.}
   \label{fig:solution_space}
 \end{figure}
 #+end_src
