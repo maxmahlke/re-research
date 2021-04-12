@@ -8,7 +8,7 @@
 This template aims to simplify the writing and sharing of
 publications, in particular of those which contain many figures, tables,
 or statistics derived from analysis data. I noticed that it commonly
-occured when I wrote a manuscript and placed the analysis numbers in
+occurred when I wrote a manuscript and placed the analysis numbers in
 the text, the input data or the results slightly changed and required
 to update the manuscript. This quickly lead to confusion: I was unsure whether
 all numbers and figures were up-to-date, or even worse, where a
@@ -337,7 +337,7 @@ Now I define two more functions: One which is square, to demonstrate
 the aspect ratio in the manuscript, and one which is two columns
 wide. The latter is based on the ~matplotlib~ release dates data in the
 [[data/]] directory. From this could, it should be apparent that any
-changes to the ~csv~ file in the [[data/]] directory would immediatly
+changes to the ~csv~ file in the [[data/]] directory would immediately
 translate into the figure (which then translates into the manuscript).
 
 #+begin_src python :tangle scripts/create_figures.py
@@ -487,7 +487,7 @@ Statistics refers to numbers which may be included in the text but are
 derived from the data. An example would be a sample size, which may
 change throughout the analysis and the editing of the manuscript. Here, I use the number
 of ~matplotlib~ versions and the earliest and latest releases as examples. It should be
-apparant from the code that if the [[data/]] changed (e.g. a new version
+apparent from the code that if the [[data/]] changed (e.g. a new version
 comes out while writing the article), so would the variables defined
 here and printed in the manuscript.
 
@@ -589,7 +589,7 @@ After running this file, the [[stats.tex]] file contains these lines:
 
 *** create_tables.py
 
-This follows the same prinicple as [[compute_stats.py]]: we write the ~LaTeX~ code using ~python~.
+This follows the same principle as [[compute_stats.py]]: we write the ~LaTeX~ code using ~python~.
 Here, I write the matplotlib versions and release dates to a table. Since there are often more than one table in a document, I define helper functions for the table header and end.
 
 #+begin_src python :tangle scripts/create_tables.py
@@ -1247,7 +1247,7 @@ Colormaps (and colorbars) in ~pgf~ plots are rasterized by default and saved as 
 
 The rasterized png colormaps are created in the same directory as the
 pgf file and added automatically. However, when using a specific
-directory for your figures in your publictaion directory (such as the
+directory for your figures in your publication directory (such as the
 ~gfx/~ directory in this template), the ~\includegraphics~ command in the
 pgf figure will fail.  Here is a workaround function I found on
 StackOverflow (have not been able to track down the source):
