@@ -1090,18 +1090,6 @@ which allows to create vectorized figures utilizing the same font as
 the rest of the document.
 #+end_src
 
-*** appendix.tex
-
-One or more sections for the abstract.
-
-#+begin_src tex :tangle frontback/appendix.tex
-\appendix
-
-%% \section{Implemented \textsc{make} commands}%
-%% \label{app:implemented_make_commands}%
-
-#+end_src
-
 *** ack.tex
 
 Again, this file only contains the actual text of the acknowledgements, the formatting is handled in the [[main.tex][root file]].
@@ -1110,12 +1098,24 @@ Again, this file only contains the actual text of the acknowledgements, the form
 Many ideas I had have been improved and implemented thanks to StackOverflow discussion.
 #+end_src
 
+*** appendix.tex
+
+One or more sections for the abstract.
+
+#+begin_src tex :tangle frontback/appendix.tex
+%%\appendix
+%%\section{Implemented \textsc{make} commands}%
+%%\label{app:implemented_make_commands}%
+#+end_src
+
 ** aux/
 #+TOC: headlines 3 local
 
 *** macros.tex
 
-#+begin_src tex
+Here, I define ~LaTeX~ macros which I commonly use. They are inserted into the [[main.tex][root file]] before the ~\begin{document}~ call.
+
+#+begin_src tex :tangle aux/macros.tex
 \newcommand{\abbr}[2]{\textit{#1} (#2)}  % Abbreviations
 
 \newcommand{\wording}[1]{\textcolor{red}{#1}}
@@ -1125,7 +1125,20 @@ Many ideas I had have been improved and implemented thanks to StackOverflow disc
 \newcommand{\eg}{e.g.\,}
 #+end_src
 
-#+begin_src tex
+Colormaps (and colorbars) in ~pgf~ plots are rasterized by default and saved as auxilliary ~png~ file. The pgf figure will contain lines like the following:
+
+#+begin_src tex :tangle aux/macros.tex
+\pgftext[left,bottom]{\includegraphics[interpolate=true,width=0.738571in,height=0.738571in]{massalia_phase_fit-img0.png}}%
+#+end_src
+
+The rasterized png colormaps are created in the same directory as the
+pgf file and added automatically. However, when using a specific
+directory for your figures in your publictaion directory (such as the
+~gfx/~ directory in this template), the ~\includegraphics~ command in the
+pgf figure will fail.  Here is a workaround function I found on
+StackOverflow (have not been able to track down the source):
+
+#+begin_src tex :tangle aux/macros.tex
 \newcommand\inputpgf[2]{{
 \let\includegraphicsWithoutPath\includegraphics
 \renewcommand{\includegraphics}[2][]{\includegraphicsWithoutPath[##1]{#1/##2}}
@@ -1133,15 +1146,45 @@ Many ideas I had have been improved and implemented thanks to StackOverflow disc
 }}
 #+end_src
 
+The TeX commands to input the pgf figure now look like this:
+
 #+begin_src tex
+\begin{figure}[t]
+  \centering
+  \inputpgf{gfx}{great_figure.pgf}
+  \caption{Look at my great figure with a nice colormap.}
+  \label{fig:great_figure}
+\end{figure}
+#+end_src
+
+The line below fixes an issue when using ~matplotlib~ generated ~pgf~ figures and
+the ~inputenc~ ~LaTeX~ package.
+
+#+begin_src tex :tangle aux/macros.tex
 \DeclareUnicodeCharacter{2212}{-}
 #+end_src
 
 *** stats.tex
 
+The numbers and statistics ~LaTeX~ variables computed with the [[compute_stats.py]] script.
+
 *** preprint.sty
 
+A preprint style file using in the compilation process when the destination is [[https://arxiv.org][arXiv]]. I have it from [[https://github.com/Swanson-Hysell/preprint-template.tex][this GitHub repository]], with only minor edits from my side.
+
 *** bib.bib
+
+The bibliography file of the article. Replace with your own.
+
+*** arxiv.bst
+
+A bibliography style file based on APJ. I have edited it to make the
+page and journal numbers in the bibliography clickable links to the
+DOI.
+
+*** publisher.bst
+
+The bibliography style file of the publisher. Replace as you see fit.
 
 ** gfx/
 #+TOC: headlines 3 local
@@ -1156,4 +1199,18 @@ Output directory for the created tables.
 
 * Troubleshooting
 
-** ~pgf~ and rasterized elements
+** ~pgf~ and rasterized elements - file not found error
+
+See the ~\inputpgf~ command in the [[macros.tex]].
+
+** Busy figures - TeX capacity exceeded
+
+Busy figures (eg. a scatter plot with several thousand points) can exceed the TeX capacity during compilation and lead
+to large rendering times of the pdf. I find it best to rasterize them.
+
+#+begin_src python
+scatter_plot = ax.scatter(..., rasterized=True)
+#+end_src
+
+Note that only the scatter-plot symbols are rasterized, the rest of the graphic are still crispy vectors.
+
