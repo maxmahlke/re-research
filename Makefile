@@ -13,7 +13,7 @@ bib:
 clean:
 	@# clean latex and bibtex auxiliary files
 	@rm -f main.bbl main.aux main.nav main.out main.dvi main.snm main.toc main.blg
-  @rm -f main.log main.fdb_latexmk main.fls main.dep main.synctex.gz main.vimtex.pdf
+	@rm -f main.log main.fdb_latexmk main.fls main.dep main.synctex.gz main.vimtex.pdf
 
 publisher:
 	@# Create tar.gz to send to publisher
