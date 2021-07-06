@@ -1,6 +1,6 @@
 #+TITLE: Re: Research
 #+SUBTITLE: A publication template with reproducible research in mind.
-#+SETUPFILE: ~/.config/emacs/modules/org.theme
+#+SETUPFILE: ~/.config/doom/org.config
 #+OPTIONS: toc:1 ^:nil
 
 * Motivation
@@ -55,6 +55,8 @@ information to reproduce the figures, tables, and numbers in the paper.
 
 As an example, I'm adding a small ~csv~ file of the ~matplotlib~ release dates.
 
+#+name: release_dates.csv
+#+attr_html: :collapsed t
 #+begin_src csv :tangle data/release_dates.csv
 version,date
 v2.2.4,2019-02-26
@@ -757,7 +759,6 @@ Now we import useful packages. ~hyperref~ and ~cleverref~ should come last.
 
 #+begin_src tex :tangle main.tex
 \usepackage{amsmath}
-\usepackage{aux/aas_macros}
 \usepackage{graphicx}
 \usepackage[title]{appendix}
 \usepackage{booktabs}
@@ -965,9 +966,6 @@ make clean
 echo
 echo "Packing"
 echo "-------"
-
-# Create archive with files outside of dependency list
-tar cfv $1.tar aux/aas_macros.sty
 
 # Parse dependencies list for files to include
 sort -u main.dep | grep "file.*{0000/00/00 v0.0}$" | while read -r line; do

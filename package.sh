@@ -6,10 +6,12 @@ echo
 
 if [[ "$REPLY" =~ ^[Yy]$ ]]; then
     make clean
-    pdflatex "\def\destination{$1} \input{main.tex}" && bibtex main && pdflatex "\def\destination{$1} \input{main.tex}"
+    pdflatex "\def\destination{$1} \input{main.tex}"
+    bibtex main
+    pdflatex "\def\destination{$1} \input{main.tex}"
 fi
 
-rm main.aux main.nav main.out main.dvi main.spl main.snm main.toc main.blg main.log  2> /dev/null
+make clean
 
 echo
 echo "Packing"
