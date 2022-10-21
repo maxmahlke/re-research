@@ -1,7 +1,8 @@
 #+TITLE: Re: Research
 #+SUBTITLE: A publication template with reproducible research in mind.
-#+SETUPFILE: ~/.config/doom/org.config
-#+OPTIONS: toc:1 ^:nil
+#+OPTIONS: ^:nil
+#+HUGO_BASE_DIR: ~/astro/org/hugo
+#+HUGO_SECTION: notes
 
 * Motivation
 
@@ -34,16 +35,14 @@ compiling and cleaning the ~TeX~ directory, as well as creating source
 to [[https://arxiv.org][arXiv]]. These source archives automatically include only the files
 relevant to the manuscript compilation.
 
-Finally, I have added functions to create ~pgf~ figures with ~matplotlib~. 
+Finally, I have added functions to create ~pgf~ figures with ~matplotlib~.
 These figures are created at compile time by ~LaTeX~ as vector graphics, giving
 infinite resolution and using the same font as the rest of the manuscript.
-The figures further are aware of the manuscript ~\textwdith~.
+The figures further are aware of the manuscript ~\textwidth~.
 
 * Template Structure
-#+TOC: headlines 1 local
 
 ** data/
-#+TOC: headlines 3 local
 
 Data required to create the figures and tables. This directory is not
 included in the source ~tar.gz~ files which are meant to be submitted to arXiv or
@@ -139,7 +138,7 @@ the figure to remove padding around the figure.
 The default aspect ratio (width:height) is the golden ratio.
 
 #+begin_src python :tangle scripts/figure_setup.py
-GOLDEN_RATIO = (np.sqrt(5) + 1) / 2 
+GOLDEN_RATIO = (np.sqrt(5) + 1) / 2
 
 def figsize(width=0.5, aspect=GOLDEN_RATIO):
     """Compute the figure width and height in inches.
@@ -168,7 +167,7 @@ def figsize(width=0.5, aspect=GOLDEN_RATIO):
 
 Now, we edit the ~matplotlib~ figure defaults to our liking by updating
 the ~rcParams~ dictionary. You can find a list of the editable
-configuration parameters [[https://matplotlib.org/stable/tutorials/introductory/customizing.html][here]]. 
+configuration parameters [[https://matplotlib.org/stable/tutorials/introductory/customizing.html][here]].
 
 The most important parameters below are the following:
 
@@ -196,7 +195,7 @@ SETUP = {
     "pgf.rcfonts"          : False,         # setup fonts from rc parameters
 
     # Packages required for figure compilation:
-    "pgf.preamble":        
+    "pgf.preamble":
                     r"\usepackage{amsmath} "
                     r"\usepackage[utf8x]{inputenc} "
                     r"\usepackage[T1]{fontenc} "
@@ -213,7 +212,7 @@ SETUP = {
     # ----------
     "figure.figsize"       : figsize(width=0.5),
     "savefig.dpi"          : 400,
-    "font.size"            : 10, 
+    "font.size"            : 10,
     "font.family"          : "serif",
     "text.color"           : "#000000",
     "axes.facecolor"       : "#ffffff",      # axes background color
@@ -276,7 +275,7 @@ matplotlib.rcParams.update(SETUP)
 This script creates the figures included in the paper. I write one function for each figure, and give the same name to the function, the figure filename, and the figure label in the ~LaTeX~ manuscript.
 
 To avoid having to edit the script every time we want to (re)compile a figure or change the output format, we add a rudimentary command line argument support.
-  
+
 We start again with imports, note that we import the [[figure_setup.py]] script to apply our ~matplotlib~ defaults.
 
 #+begin_src python :tangle scripts/create_figures.py
@@ -459,7 +458,7 @@ if __name__ == "__main__":
 
 Command-line arguments are accessible via the ~sys.argv~ list. We also
 add help messages in case the script is called with an insufficient
-amount of arguments. 
+amount of arguments.
 #+begin_src python :tangle scripts/create_figures.py
     if len(sys.argv) < 2:
         print("Provide a figure name to compile it. Choose from:")
@@ -560,8 +559,8 @@ if __name__ == "__main__":
     STATS["NVersions"] = (len(data), int)
 
     # Get the earliest and latest version
-    STATS["VersionEarliest"] = (data.version.min(), str) 
-    STATS["VersionLatest"] = (data.version.max(), str) 
+    STATS["VersionEarliest"] = (data.version.min(), str)
+    STATS["VersionLatest"] = (data.version.max(), str)
     STATS["VersionEarliestDate"] = (data.loc[
          data.version == data.version.min(), "date"
          ].values[0], str)
@@ -571,7 +570,7 @@ if __name__ == "__main__":
 
     # And write to file
     write_variables_to_file(STATS)
-    
+
 #+end_src
 
 As you can see, we are putting the code which computes the variable
@@ -581,7 +580,7 @@ in the analysis.
 
 After running this file, the [[stats.tex]] file contains these lines:
 
-#+begin_src 
+#+begin_src
 \def\NVersions{23\xspace}
 \def\VersionEarliest{v1.4.0\xspace}
 \def\VersionLatest{v3.0.3\xspace}
@@ -680,7 +679,6 @@ if __name__ == "__main__":
 
 
 ** ./
-#+TOC: headlines 3 local
 
 
 *** main.tex
@@ -888,7 +886,7 @@ And we end the document with a fresh page and the [[appendix.tex][appendix]].
 The ~Makefile~ offers convenient access to compile any part of the project. The command line call in the project root folder is
 
 #+begin_src shell
-$ make [command] 
+$ make [command]
 #+end_src
 
 where ~command~ is any of the following:
@@ -899,7 +897,7 @@ where ~command~ is any of the following:
 - ~all~ > Recompile all figures, tables, statistics, and the article including bibliography and references
 - ~clean~ > Delete auxiliary ~LaTeX~ files created during the compilation process
 - ~publisher~ > Create a ~tar.gz~ file containing all relevant article files for submission to the publisher
-- ~arxiv~ > Create a ~tar.gz~ file containing all relevant article files for submission to [[https://arxiv.org][arXiv]] 
+- ~arxiv~ > Create a ~tar.gz~ file containing all relevant article files for submission to [[https://arxiv.org][arXiv]]
 
 In 90\% of the cases, you want to run ~make doc~}. 9\% are ~make clean~ to get
 rid of the temporary files created during the ~LaTeX~ compilation process. At the very end, run ~make arxiv~ and ~make publisher~ to prepare the submission process. These two commands run the [[package.sh]] script.
@@ -951,8 +949,8 @@ automatically left out.
 #!/usr/bin/env bash
 
 # Compile if necessary, passing the destination parameter
-read -p "Compile first? [y/n] " -n 1 REPLY 
-echo 
+read -p "Compile first? [y/n] " -n 1 REPLY
+echo
 
 if [[ "$REPLY" =~ ^[Yy]$ ]]; then
     make clean
@@ -979,13 +977,13 @@ sort -u main.dep | grep "file.*{0000/00/00 v0.0}$" | while read -r line; do
     fi
 
     # Check if file exists
-    if [[ -f $filename ]]; then 
+    if [[ -f $filename ]]; then
         tar --append -v -f $1.tar $filename
     else
         # Otherwise, add .tex extension and try again
         filename="${filename}.tex"
 
-        if [[ -f $filename ]]; then 
+        if [[ -f $filename ]]; then
             tar --append -v -f $1.tar $filename
         fi
     fi
@@ -1008,7 +1006,6 @@ The file you are currently reading unless you are reading the [[template.html][H
 The file you are currently reading unless you are reading the [[template.org][org]] file.
 
 ** sections/
-#+TOC: headlines 3 local
 
 Where it all comes together.
 
@@ -1051,11 +1048,11 @@ At the end, we add the root ~tex~ file variable for [[https://www.gnu.org/softwa
 
 *** Methodology
 
-#+begin_src tex :tangle sections/section2.tex 
+#+begin_src tex :tangle sections/section2.tex
 %! TEX root = ../main.tex
 #+end_src
 
-#+begin_src tex :tangle sections/section2.tex 
+#+begin_src tex :tangle sections/section2.tex
 \section{Methodology}%
 \label{sec:methodology}%
 
@@ -1081,7 +1078,7 @@ In \Cref{fig:matplotlib_release_dates}, we can see the use of a double-column \t
 documentation for implementation details.
 
 The supplied \textsc{Makefile} contains some convenience functions for
-compiling and sharing the document. 
+compiling and sharing the document.
 
 The rest of this document is padded with Lorem Impsum.
 
@@ -1099,7 +1096,7 @@ Include the ~matplotlib~ versions table created with [[create_tables.py]].
 \lipsum[3-5]
 #+end_src
 
-#+begin_src tex :tangle sections/section2.tex 
+#+begin_src tex :tangle sections/section2.tex
 %% Local Variables:
 %% tex-main-file: "../main.tex"
 %% End:
@@ -1177,7 +1174,6 @@ Include the ~matplotlib~ versions table created with [[create_tables.py]].
 
 
 ** frontback/
-#+TOC: headlines 3 local
 
 *** abstract.tex
 
@@ -1221,7 +1217,6 @@ One or more sections for the abstract.
 #+end_src
 
 ** aux/
-#+TOC: headlines 3 local
 
 *** macros.tex
 
@@ -1299,12 +1294,10 @@ DOI.
 The bibliography style file of the publisher. Replace as you see fit.
 
 ** gfx/
-#+TOC: headlines 3 local
 
 Output directory for the created figures.
 
 ** tables/
-#+TOC: headlines 3 local
 
 Output directory for the created tables.
 

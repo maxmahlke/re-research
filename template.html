@@ -277,10 +277,10 @@ relevant to the manuscript compilation.
 </p>
 
 <p>
-Finally, I have added functions to create <code>pgf</code> figures with <code>matplotlib</code>. 
+Finally, I have added functions to create <code>pgf</code> figures with <code>matplotlib</code>.
 These figures are created at compile time by <code>LaTeX</code> as vector graphics, giving
 infinite resolution and using the same font as the rest of the manuscript.
-The figures further are aware of the manuscript <code>\textwdith</code>.
+The figures further are aware of the manuscript <code>\textwidth</code>.
 </p>
 </div>
 </div>
@@ -429,7 +429,7 @@ The default aspect ratio (width:height) is the golden ratio.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-python"><span style="color: #dcaeea;">GOLDEN_RATIO</span> = (np.sqrt(<span style="color: #da8548; font-weight: bold;">5</span>) + <span style="color: #da8548; font-weight: bold;">1</span>) / <span style="color: #da8548; font-weight: bold;">2</span> 
+<pre class="src src-python"><span style="color: #dcaeea;">GOLDEN_RATIO</span> = (np.sqrt(<span style="color: #da8548; font-weight: bold;">5</span>) + <span style="color: #da8548; font-weight: bold;">1</span>) / <span style="color: #da8548; font-weight: bold;">2</span>
 
 <span style="color: #51afef;">def</span> <span style="color: #c678dd;">figsize</span>(width=<span style="color: #da8548; font-weight: bold;">0.5</span>, aspect=GOLDEN_RATIO):
     <span style="color: #83898d;">"""Compute the figure width and height in inches.</span>
@@ -460,7 +460,7 @@ The default aspect ratio (width:height) is the golden ratio.
 <p>
 Now, we edit the <code>matplotlib</code> figure defaults to our liking by updating
 the <code>rcParams</code> dictionary. You can find a list of the editable
-configuration parameters <a href="https://matplotlib.org/stable/tutorials/introductory/customizing.html">here</a>. 
+configuration parameters <a href="https://matplotlib.org/stable/tutorials/introductory/customizing.html">here</a>.
 </p>
 
 <p>
@@ -493,7 +493,7 @@ The most important parameters below are the following:
     <span style="color: #98be65;">"pgf.rcfonts"</span>          : <span style="color: #a9a1e1;">False</span>,         <span style="color: #5B6268;"># </span><span style="color: #5B6268;">setup fonts from rc parameters</span>
 
     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Packages required for figure compilation:</span>
-    <span style="color: #98be65;">"pgf.preamble"</span>:        
+    <span style="color: #98be65;">"pgf.preamble"</span>:
                     r<span style="color: #98be65;">"\usepackage{amsmath} "</span>
                     r<span style="color: #98be65;">"\usepackage[utf8x]{inputenc} "</span>
                     r<span style="color: #98be65;">"\usepackage[T1]{fontenc} "</span>
@@ -510,7 +510,7 @@ The most important parameters below are the following:
     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">----------</span>
     <span style="color: #98be65;">"figure.figsize"</span>       : figsize(width=<span style="color: #da8548; font-weight: bold;">0.5</span>),
     <span style="color: #98be65;">"savefig.dpi"</span>          : <span style="color: #da8548; font-weight: bold;">400</span>,
-    <span style="color: #98be65;">"font.size"</span>            : <span style="color: #da8548; font-weight: bold;">10</span>, 
+    <span style="color: #98be65;">"font.size"</span>            : <span style="color: #da8548; font-weight: bold;">10</span>,
     <span style="color: #98be65;">"font.family"</span>          : <span style="color: #98be65;">"serif"</span>,
     <span style="color: #98be65;">"text.color"</span>           : <span style="color: #98be65;">"#000000"</span>,
     <span style="color: #98be65;">"axes.facecolor"</span>       : <span style="color: #98be65;">"#ffffff"</span>,      <span style="color: #5B6268;"># </span><span style="color: #5B6268;">axes background color</span>
@@ -785,7 +785,7 @@ of implementing it.
 <p>
 Command-line arguments are accessible via the <code>sys.argv</code> list. We also
 add help messages in case the script is called with an insufficient
-amount of arguments. 
+amount of arguments.
 </p>
 <div class="org-src-container">
 <pre class="src src-python">    <span style="color: #51afef;">if</span> <span style="color: #c678dd;">len</span>(sys.argv) &lt; <span style="color: #da8548; font-weight: bold;">2</span>:
@@ -901,8 +901,8 @@ Now we define variables and write them to the file. Here, I add the number of <c
     <span style="color: #dcaeea;">STATS</span>[<span style="color: #98be65;">"NVersions"</span>] = (<span style="color: #c678dd;">len</span>(data), <span style="color: #c678dd;">int</span>)
 
     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Get the earliest and latest version</span>
-    <span style="color: #dcaeea;">STATS</span>[<span style="color: #98be65;">"VersionEarliest"</span>] = (data.version.<span style="color: #c678dd;">min</span>(), <span style="color: #c678dd;">str</span>) 
-    <span style="color: #dcaeea;">STATS</span>[<span style="color: #98be65;">"VersionLatest"</span>] = (data.version.<span style="color: #c678dd;">max</span>(), <span style="color: #c678dd;">str</span>) 
+    <span style="color: #dcaeea;">STATS</span>[<span style="color: #98be65;">"VersionEarliest"</span>] = (data.version.<span style="color: #c678dd;">min</span>(), <span style="color: #c678dd;">str</span>)
+    <span style="color: #dcaeea;">STATS</span>[<span style="color: #98be65;">"VersionLatest"</span>] = (data.version.<span style="color: #c678dd;">max</span>(), <span style="color: #c678dd;">str</span>)
     <span style="color: #dcaeea;">STATS</span>[<span style="color: #98be65;">"VersionEarliestDate"</span>] = (data.loc[
          data.version == data.version.<span style="color: #c678dd;">min</span>(), <span style="color: #98be65;">"date"</span>
          ].values[<span style="color: #da8548; font-weight: bold;">0</span>], <span style="color: #c678dd;">str</span>)
@@ -912,7 +912,7 @@ Now we define variables and write them to the file. Here, I add the number of <c
 
     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">And write to file</span>
     write_variables_to_file(STATS)
-    
+
 </pre>
 </div>
 
@@ -1312,7 +1312,7 @@ The <code>Makefile</code> offers convenient access to compile any part of the pr
 </p>
 
 <div class="org-src-container">
-<pre class="src src-shell">$ <span style="color: #ECBE7B;">make</span> <span style="color: #51afef;">[</span>command<span style="color: #51afef;">]</span> 
+<pre class="src src-shell">$ <span style="color: #ECBE7B;">make</span> <span style="color: #51afef;">[</span>command<span style="color: #51afef;">]</span>
 </pre>
 </div>
 
@@ -1388,8 +1388,8 @@ automatically left out.
 <pre class="src src-shell"><span style="color: #5B6268;">#</span><span style="color: #5B6268;">!/usr/bin/</span><span style="color: #51afef;">env</span><span style="color: #5B6268;"> bash</span>
 
 <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Compile if necessary, passing the destination parameter</span>
-<span style="color: #c678dd;">read</span> -p <span style="color: #98be65;">"Compile first? [y/n] "</span> -n <span style="color: #da8548; font-weight: bold;">1</span> REPLY 
-<span style="color: #ECBE7B;">echo</span> 
+<span style="color: #c678dd;">read</span> -p <span style="color: #98be65;">"Compile first? [y/n] "</span> -n <span style="color: #da8548; font-weight: bold;">1</span> REPLY
+<span style="color: #ECBE7B;">echo</span>
 
 <span style="color: #51afef;">if</span> <span style="color: #51afef;">[</span><span style="color: #c678dd;">[</span> <span style="color: #98be65;">"</span><span style="color: #a9a1e1;">$</span><span style="color: #dcaeea;">REPLY</span><span style="color: #98be65;">"</span> =~ ^<span style="color: #98be65;">[</span>Yy<span style="color: #98be65;">]</span>$ <span style="color: #c678dd;">]</span><span style="color: #51afef;">]</span>; <span style="color: #51afef;">then</span>
     <span style="color: #ECBE7B;">make</span> clean
@@ -1419,13 +1419,13 @@ sort -u main.dep | <span style="color: #ECBE7B;">grep</span> <span style="color:
     <span style="color: #51afef;">fi</span>
 
     <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Check if file exists</span>
-    <span style="color: #51afef;">if</span> <span style="color: #51afef;">[</span><span style="color: #c678dd;">[</span> -f $<span style="color: #dcaeea;">filename</span> <span style="color: #c678dd;">]</span><span style="color: #51afef;">]</span>; <span style="color: #51afef;">then</span> 
+    <span style="color: #51afef;">if</span> <span style="color: #51afef;">[</span><span style="color: #c678dd;">[</span> -f $<span style="color: #dcaeea;">filename</span> <span style="color: #c678dd;">]</span><span style="color: #51afef;">]</span>; <span style="color: #51afef;">then</span>
         tar --append -v -f $<span style="color: #dcaeea;">1</span>.tar $<span style="color: #dcaeea;">filename</span>
     <span style="color: #51afef;">else</span>
         <span style="color: #5B6268;"># </span><span style="color: #5B6268;">Otherwise, add .tex extension and try again</span>
         <span style="color: #dcaeea;">filename</span>=<span style="color: #98be65;">"</span><span style="color: #a9a1e1;">$</span><span style="color: #dcaeea;">{filename}</span><span style="color: #98be65;">.tex"</span>
 
-        <span style="color: #51afef;">if</span> <span style="color: #51afef;">[</span><span style="color: #c678dd;">[</span> -f $<span style="color: #dcaeea;">filename</span> <span style="color: #c678dd;">]</span><span style="color: #51afef;">]</span>; <span style="color: #51afef;">then</span> 
+        <span style="color: #51afef;">if</span> <span style="color: #51afef;">[</span><span style="color: #c678dd;">[</span> -f $<span style="color: #dcaeea;">filename</span> <span style="color: #c678dd;">]</span><span style="color: #51afef;">]</span>; <span style="color: #51afef;">then</span>
             tar --append -v -f $<span style="color: #dcaeea;">1</span>.tar $<span style="color: #dcaeea;">filename</span>
         <span style="color: #51afef;">fi</span>
     <span style="color: #51afef;">fi</span>
@@ -1563,7 +1563,7 @@ In <span style="color: #51afef;">\Cref</span>{<span style="color: #a9a1e1;">fig:
 documentation for implementation details.
 
 The supplied <span style="color: #51afef;">\textsc</span>{<span style="font-weight: bold;">Makefile</span>} contains some convenience functions for
-compiling and sharing the document. 
+compiling and sharing the document.
 
 The rest of this document is padded with Lorem Impsum.
 
